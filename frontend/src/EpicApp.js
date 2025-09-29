@@ -44,6 +44,54 @@ const setMaterialProperty = (material, property, value) => {
   }
 };
 
+// 輔助函數來獲取行星顏色
+const getPlanetColor = (prediction, habitability) => {
+  if (habitability > 70) return '#4CAF50';
+  if (habitability > 40) return '#FF9800';
+  if (prediction === 'CONFIRMED') return '#2196F3';
+  if (prediction === 'CANDIDATE') return '#FF9800';
+  return '#F44336';
+};
+
+// 演示預測創建函數
+const createDemoPrediction = (params) => {
+  // 基於輸入參數計算一致的演示數據
+  const habitability = Math.min(100, Math.max(0, 
+    100 - Math.abs(params.koi_teq - 288) * 0.1 + 
+    (params.koi_prad - 1) * 10 +
+    (params.koi_insol - 1) * 5
+  ));
+  
+  let prediction, planetType;
+  
+  if (params.koi_prad > 8) {
+    prediction = "CONFIRMED";
+    planetType = "Gas Giant";
+  } else if (params.koi_prad > 1.5 && params.koi_teq < 400) {
+    prediction = "CANDIDATE";
+    planetType = "Super Earth";
+  } else if (params.koi_teq > 500) {
+    prediction = "FALSE POSITIVE";
+    planetType = "Hot Planet";
+  } else {
+    prediction = habitability > 60 ? "CONFIRMED" : "CANDIDATE";
+    planetType = habitability > 60 ? "Earth-like" : "Rocky Planet";
+  }
+  
+  return {
+    prediction: prediction,
+    confidence: Math.min(0.95, 0.6 + habitability * 0.003),
+    habitability_score: Math.round(habitability),
+    planet_type: planetType,
+    star_type: "G-dwarf",
+    probabilities: {
+      "CONFIRMED": prediction === "CONFIRMED" ? 0.7 : 0.2,
+      "CANDIDATE": prediction === "CANDIDATE" ? 0.65 : 0.25,
+      "FALSE POSITIVE": 0.05
+    }
+  };
+};
+
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
   const { camera } = useThree();
@@ -435,7 +483,14 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds })
     <div className="ai-panel epic-panel">
       <div className="panel-header">
         <h2>🤖 AI EXOPLANET PREDICTOR</h2>
-        <div className="ai-status">Neural Networks Active • 92.16% Accuracy</div>
+        <div className="ai-status">
+          Neural Networks Active • 92.16% Accuracy
+          {predictedPlanetIds.length > 0 && (
+            <span className="planet-count">
+              • {predictedPlanetIds.length} Predicted Planet(s)
+            </span>
+          )}
+        </div>
       </div>
       
       {/* Enhanced Presets */}
@@ -578,7 +633,6 @@ function App() {
   const [stats, setStats] = useState(null);
   const [animatingPlanetId, setAnimatingPlanetId] = useState(null);
   const [predictedPlanetIds, setPredictedPlanetIds] = useState([]);
-  const [predictionCount, setPredictionCount] = useState(0);
 
   // Camera control states
   const [cameraTarget, setCameraTarget] = useState(null);
@@ -668,47 +722,52 @@ function App() {
     loadData();
   }, []);
 
-  // Handle AI prediction with epic animation
+  // Handle AI prediction with epic animation - 修復版本
   const handlePredict = async (params) => {
     setLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/predict`, params);
       setPrediction(response.data);
       
-      // Check if we already have a predicted planet
+      // 修復：正確查找已存在的預測行星
       const existingPredictedIndex = exoplanets.findIndex(planet =>
-        planet.id.startsWith('predicted-')
+        planet.id.startsWith('predicted-') || planet.id.startsWith('demo-')
       );
 
       let targetPlanet;
       let planetId;
 
       if (existingPredictedIndex !== -1) {
-        // Update existing predicted planet
+        // 更新現有預測行星
+        const existingPlanet = exoplanets[existingPredictedIndex];
         const updatedPlanet = {
-          ...exoplanets[existingPredictedIndex],
+          ...existingPlanet,
           name: `AI Predicted ${response.data.planet_type}`,
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: response.data.prediction,
           habitability: response.data.habitability_score,
-          color: response.data.prediction === 'CONFIRMED' ? '#4CAF50' :
-                 response.data.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
+          color: getPlanetColor(response.data.prediction, response.data.habitability_score),
+          // 保持相同的位置，不要重新生成
+          position: existingPlanet.position
         };
 
         setExoplanets(prev => prev.map((planet, index) =>
           index === existingPredictedIndex ? updatedPlanet : planet
         ));
         targetPlanet = updatedPlanet;
-        planetId = updatedPlanet.id;
+        planetId = existingPlanet.id; // 使用相同的 ID
         setAnimatingPlanetId(planetId);
+        
+        console.log('🔄 Updated existing predicted planet:', planetId);
       } else {
-        // Create new planet with epic entrance
-        planetId = `predicted-${predictionCount + 1}`;
-        // Generate position based on parameters for consistency
-        const baseX = (params.koi_period % 30) - 15; // -15 to 15 based on period
-        const baseY = (params.koi_prad * 5) - 10; // 0 to 10 based on radius
-        const baseZ = (params.koi_teq / 100) - 20; // -20 to 10 based on temperature
+        // 創建新行星
+        planetId = `predicted-${Date.now()}`;
+        // 生成固定的位置（基於參數的哈希值）
+        const positionSeed = params.koi_period + params.koi_prad * 10 + params.koi_teq;
+        const baseX = Math.sin(positionSeed) * 30;
+        const baseY = Math.cos(positionSeed) * 15;
+        const baseZ = Math.sin(positionSeed * 2) * 30;
 
         const newPlanet = {
           id: planetId,
@@ -718,18 +777,18 @@ function App() {
           temperature: params.koi_teq,
           disposition: response.data.prediction,
           habitability: response.data.habitability_score,
-          color: response.data.prediction === 'CONFIRMED' ? '#4CAF50' :
-                 response.data.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
+          color: getPlanetColor(response.data.prediction, response.data.habitability_score)
         };
 
         setExoplanets(prev => [...prev, newPlanet]);
         targetPlanet = newPlanet;
         setAnimatingPlanetId(planetId);
         setPredictedPlanetIds(prev => [...prev, planetId]);
-        setPredictionCount(prev => prev + 1);
+        
+        console.log('🆕 Created new predicted planet:', planetId);
       }
 
-      // Jump camera to predicted planet
+      // 相機動畫
       const planetPos = new THREE.Vector3(...targetPlanet.position);
       const distance = Math.max(targetPlanet.radius * 5, 10);
       const cameraPos = planetPos.clone().add(new THREE.Vector3(distance, distance * 0.7, distance));
@@ -739,46 +798,64 @@ function App() {
       setIsTransitioning(true);
       setSelectedPlanet(targetPlanet);
       
-      // Stop animation after 8 seconds
+      // 停止動畫
       setTimeout(() => setAnimatingPlanetId(null), 8000);
       
     } catch (error) {
       console.error('Prediction failed:', error);
-      // Show demo prediction even if API fails
-      const demoPrediction = {
-        prediction: "CANDIDATE",
-        confidence: 0.78,
-        habitability_score: 85,
-        planet_type: "Earth-like",
-        star_type: "G-dwarf",
-        probabilities: {
-          "CANDIDATE": 0.78,
-          "CONFIRMED": 0.15,
-          "FALSE POSITIVE": 0.07
-        }
-      };
+      // 演示模式
+      const demoPrediction = createDemoPrediction(params);
       setPrediction(demoPrediction);
       
-      // Still create the planet for visual effect
-      const demoPlanetId = `demo-${Date.now()}-${Math.random()}`;
-      const newPlanet = {
-        id: demoPlanetId,
-        name: "AI Predicted Earth-like",
-        position: [
-          (Math.random() - 0.5) * 40,
-          (Math.random() - 0.5) * 25, 
-          (Math.random() - 0.5) * 40
-        ],
-        radius: params.koi_prad,
-        temperature: params.koi_teq,
-        disposition: "CANDIDATE",
-        habitability: 85,
-        color: '#FF9800'
-      };
+      // 使用相同的邏輯來處理演示行星
+      const existingDemoIndex = exoplanets.findIndex(planet =>
+        planet.id.startsWith('demo-') || planet.id.startsWith('predicted-')
+      );
+
+      if (existingDemoIndex !== -1) {
+        // 更新現有演示行星
+        const existingPlanet = exoplanets[existingDemoIndex];
+        const updatedPlanet = {
+          ...existingPlanet,
+          name: `Demo: ${demoPrediction.planet_type}`,
+          radius: params.koi_prad,
+          temperature: params.koi_teq,
+          disposition: demoPrediction.prediction,
+          habitability: demoPrediction.habitability_score,
+          color: getPlanetColor(demoPrediction.prediction, demoPrediction.habitability_score),
+          position: existingPlanet.position
+        };
+
+        setExoplanets(prev => prev.map((planet, index) =>
+          index === existingDemoIndex ? updatedPlanet : planet
+        ));
+        setAnimatingPlanetId(existingPlanet.id);
+        console.log('🔄 Updated existing demo planet:', existingPlanet.id);
+      } else {
+        // 創建新演示行星
+        const demoPlanetId = `demo-${Date.now()}`;
+        const positionSeed = params.koi_period + params.koi_prad * 10 + params.koi_teq;
+        const baseX = Math.sin(positionSeed) * 30;
+        const baseY = Math.cos(positionSeed) * 15;
+        const baseZ = Math.sin(positionSeed * 2) * 30;
+
+        const newPlanet = {
+          id: demoPlanetId,
+          name: `Demo: ${demoPrediction.planet_type}`,
+          position: [baseX, baseY, baseZ],
+          radius: params.koi_prad,
+          temperature: params.koi_teq,
+          disposition: demoPrediction.prediction,
+          habitability: demoPrediction.habitability_score,
+          color: getPlanetColor(demoPrediction.prediction, demoPrediction.habitability_score)
+        };
+        
+        setExoplanets(prev => [...prev, newPlanet]);
+        setAnimatingPlanetId(demoPlanetId);
+        setPredictedPlanetIds(prev => [...prev, demoPlanetId]);
+        console.log('🆕 Created new demo planet:', demoPlanetId);
+      }
       
-      setExoplanets(prev => [...prev, newPlanet]);
-      setAnimatingPlanetId(newPlanet.id);
-      setPredictedPlanetIds(prev => [...prev, newPlanet.id]);
       setTimeout(() => setAnimatingPlanetId(null), 8000);
     } finally {
       setLoading(false);
