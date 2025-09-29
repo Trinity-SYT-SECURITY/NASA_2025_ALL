@@ -103,7 +103,7 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
     }
   };
 
-  const getPredictionColor = (prediction: string) => {
+  const getPredictionColor = (prediction: string): string => {
     switch (prediction) {
       case 'CONFIRMED':
         return 'linear-gradient(45deg, #4caf50, #2e7d32)';
@@ -174,7 +174,7 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
             Classification Probabilities
           </Typography>
 
-          {(Object.entries(result.probabilities) as [string, number][]).map(([category, probability], index) => (
+          {Object.entries(result.probabilities).map(([category, probability], index) => (
             <motion.div
               key={category}
               initial={{ opacity: 0, x: -50 }}
