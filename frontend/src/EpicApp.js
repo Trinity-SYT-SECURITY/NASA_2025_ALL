@@ -24,6 +24,23 @@ const API_BASE_URL = getApiBaseUrl();
 
 console.log('API Base URL:', API_BASE_URL);
 
+// 安全的 material 屬性設置函數
+const setMaterialProperty = (material, property, value) => {
+  if (!material) return;
+  
+  if (Array.isArray(material)) {
+    material.forEach(mat => {
+      if (mat && mat[property] !== undefined) {
+        mat[property] = value;
+      }
+    });
+  } else {
+    if (material && material[property] !== undefined) {
+      material[property] = value;
+    }
+  }
+};
+
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
   const { camera } = useThree();
@@ -87,6 +104,7 @@ function RealisticPlanet({ position, radius, color, name, data, onClick, isAnima
   const groupRef = useRef();
   const ringRef = useRef();
   const atmosphereRef = useRef();
+  const glowRef = useRef();
   
   // Realistic rotation speeds based on planet type
   const rotationSpeed = useMemo(() => {
@@ -110,14 +128,14 @@ function RealisticPlanet({ position, radius, color, name, data, onClick, isAnima
         
         // Pulsing atmosphere
         if (atmosphereRef.current) {
-          const material = atmosphereRef.current.material;
-          if (Array.isArray(material)) {
-            material.forEach((mat) => {
-              mat.opacity = 0.3 + Math.sin(time * 4) * 0.2;
-            });
-          } else {
-            material.opacity = 0.3 + Math.sin(time * 4) * 0.2;
-          }
+          const opacity = 0.3 + Math.sin(time * 4) * 0.2;
+          setMaterialProperty(atmosphereRef.current.material, 'opacity', opacity);
+        }
+        
+        // Pulsing glow effect
+        if (glowRef.current) {
+          const glowPulse = Math.sin(time * 1.5) * 0.3 + 0.7;
+          setMaterialProperty(glowRef.current.material, 'opacity', glowPulse * 0.3);
         }
       } else {
         // Subtle orbital motion
@@ -197,7 +215,7 @@ function RealisticPlanet({ position, radius, color, name, data, onClick, isAnima
       
       {/* Selection glow when clicked */}
       {data.selected && (
-        <mesh>
+        <mesh ref={glowRef}>
           <sphereGeometry args={[radius * 1.2, 16, 16]} />
           <meshBasicMaterial 
             color="#ffffff" 
