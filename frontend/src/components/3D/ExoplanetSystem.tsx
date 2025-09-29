@@ -53,7 +53,18 @@ const ExoplanetSystem: React.FC<ExoplanetSystemProps> = ({
     // Glow effect
     if (glowRef.current) {
       const glowPulse = Math.sin(time * 1.5) * 0.3 + 0.7;
-      glowRef.current.material.opacity = glowPulse * 0.3;
+      const material = glowRef.current.material;
+      if (Array.isArray(material)) {
+        material.forEach((mat) => {
+          if (mat && mat.opacity !== undefined) {
+            mat.opacity = glowPulse * 0.3;
+          }
+        });
+      } else {
+        if (material && material.opacity !== undefined) {
+          material.opacity = glowPulse * 0.3;
+        }
+      }
     }
 
     // Orbital motion for moons/rings
