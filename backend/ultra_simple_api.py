@@ -21,15 +21,19 @@ app.add_middleware(
 
 # Load models
 try:
-    ml_model = joblib.load('../ml/exoplanet_model_best.joblib')
-    scaler = joblib.load('../ml/scaler.joblib') 
-    label_encoder = joblib.load('../ml/label_encoder.joblib')
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    ml_dir = os.path.join(current_dir, '..', 'ml')
+
+    ml_model = joblib.load(os.path.join(ml_dir, 'exoplanet_model_best.joblib'))
+    scaler = joblib.load(os.path.join(ml_dir, 'scaler.joblib'))
+    label_encoder = joblib.load(os.path.join(ml_dir, 'label_encoder.joblib'))
     models_loaded = True
-    print("✅ ML models loaded successfully")
-except:
+    print("✅ ML models loaded successfully from:", ml_dir)
+except Exception as e:
     ml_model = scaler = label_encoder = None
     models_loaded = False
-    print("⚠️ Running in demo mode")
+    print(f"⚠️ Running in demo mode - Error loading models: {e}")
 
 @app.get("/")
 async def root():
@@ -51,7 +55,12 @@ async def health():
         "status": "healthy",
         "models_loaded": models_loaded,
         "ml_accuracy": "92.16%",
-        "system": "operational"
+        "system": "operational",
+        "model_details": {
+            "best_model": type(ml_model).__name__ if ml_model else "Not loaded",
+            "scaler": type(scaler).__name__ if scaler else "Not loaded",
+            "label_encoder": type(label_encoder).__name__ if label_encoder else "Not loaded"
+        }
     }
 
 @app.get("/stats")
@@ -201,4 +210,6 @@ if __name__ == "__main__":
     import uvicorn
     print("🌌 STARTING EXOPLANET AI PLATFORM...")
     print("🚀 Backend: http://localhost:8000")
+    print("🔧 To deploy backend, use Railway, Render, or Heroku")
+    print("📚 Endpoints: /health, /stats, /predict, /demo, /exoplanets")
     uvicorn.run(app, host="0.0.0.0", port=8000)

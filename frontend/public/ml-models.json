@@ -1,0 +1,11 @@
+{
+  "models": {
+    "xgboost": {
+      "type": "classification",
+      "features": ["koi_period", "koi_duration", "koi_depth", "koi_prad", "koi_teq", "koi_insol", "koi_model_snr", "koi_steff", "koi_slogg", "koi_srad", "koi_smass", "koi_kepmag", "koi_fpflag_nt", "koi_fpflag_ss", "koi_fpflag_co", "koi_fpflag_ec", "ra", "dec", "habitable_zone", "koi_score"],
+      "classes": ["CONFIRMED", "CANDIDATE", "FALSE POSITIVE"],
+      "model_data": "base64_encoded_model_data_here"
+    }
+  },
+  "version": "1.0.0"
+}
