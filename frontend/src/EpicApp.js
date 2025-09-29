@@ -710,7 +710,8 @@ function App() {
       } else {
         // 嘗試使用真實API，如果失敗則使用模擬服務
         try {
-          response = await axios.post(`${API_BASE_URL}/predict`, params);
+          const apiResponse = await axios.post(`${API_BASE_URL}/predict`, params);
+          response = apiResponse.data; // API返回的是data屬性中的物件
           console.log('✅ Using real ML API');
         } catch (apiError) {
           console.log('⚠️ API not available, using mock ML service');
@@ -725,6 +726,13 @@ function App() {
       const existingPredictedIndex = exoplanets.findIndex(planet =>
         planet.id === fixedPlanetId
       );
+
+      console.log('🔍 Prediction Debug:', {
+        existingPredictedIndex,
+        exoplanetsLength: exoplanets.length,
+        hasPredictedPlanet,
+        params
+      });
 
       let targetPlanet;
       let planetId = fixedPlanetId;
@@ -770,10 +778,14 @@ function App() {
       }
 
       // Jump camera to predicted planet
+      console.log('🎯 Jumping to planet:', targetPlanet);
       const planetPos = new THREE.Vector3(...targetPlanet.position);
       const distance = Math.max(targetPlanet.radius * 5, 10);
       const cameraPos = planetPos.clone().add(new THREE.Vector3(distance, distance * 0.7, distance));
-      
+
+      console.log('📍 Camera position:', cameraPos);
+      console.log('👁️ Planet position:', planetPos);
+
       setCameraTarget(cameraPos);
       setCameraLookAt(planetPos);
       setIsTransitioning(true);
