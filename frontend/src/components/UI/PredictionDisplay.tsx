@@ -1,4 +1,5 @@
 import React from 'react';
+import { SxProps, Theme } from '@mui/material/styles';
 import {
   Box,
   Typography,
@@ -11,21 +12,82 @@ import {
   IconButton
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { 
-  CheckCircle, 
-  Warning, 
-  Cancel, 
-  Close, 
-  Thermostat, 
-  Public, 
+import {
+  CheckCircle,
+  Warning,
+  Cancel,
+  Close,
+  Thermostat,
+  Public,
   Star,
   Psychology
 } from '@mui/icons-material';
 
+interface PredictionResult {
+  prediction: string;
+  confidence: number;
+  habitability_score: number;
+  planet_type: string;
+  star_type: string;
+  probabilities: Record<string, number>;
+  status?: string;
+}
+
 interface PredictionDisplayProps {
-  result: any;
+  result: PredictionResult;
   onClose: () => void;
 }
+
+// ---------- Styles ----------
+const headerBoxStyle: SxProps<Theme> = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  mb: 3,
+};
+
+const headerTitleStyle: SxProps<Theme> = {
+  fontWeight: 'bold',
+};
+
+const dividerStyle: SxProps<Theme> = {
+  my: 3,
+  borderColor: 'rgba(0, 212, 255, 0.3)',
+};
+
+const flexCenterBox: SxProps<Theme> = {
+  display: 'flex',
+  alignItems: 'center',
+  mb: 2,
+};
+
+const flexBetweenBox: SxProps<Theme> = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  mb: 1,
+};
+
+const cardTransparent: SxProps<Theme> = {
+  background: 'rgba(255, 255, 255, 0.05)',
+  p: 2,
+};
+
+const cardRecommendation: SxProps<Theme> = {
+  background: 'rgba(0, 212, 255, 0.1)',
+  p: 2,
+  border: '1px solid rgba(0, 212, 255, 0.3)',
+};
+
+const probabilityBarStyle = (color: string): SxProps<Theme> => ({
+  height: 8,
+  borderRadius: 4,
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  '& .MuiLinearProgress-bar': {
+    background: color,
+    borderRadius: 4,
+  },
+});
+// ----------------------------
 
 const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }) => {
   const getPredictionIcon = (prediction: string) => {
@@ -54,7 +116,7 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
     }
   };
 
-  const getHabitabilityLevel = (score: number) => {
+  const getHabitabilityLevel = (score: number): { level: string; color: string } => {
     if (score >= 70) return { level: 'High', color: '#4caf50' };
     if (score >= 40) return { level: 'Medium', color: '#ff9800' };
     return { level: 'Low', color: '#f44336' };
@@ -72,8 +134,8 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
       <Card className="holo-panel">
         <CardContent>
           {/* Header */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" className="glow-text">
+          <Box sx={headerBoxStyle}>
+            <Typography variant="h5" className="glow-text" sx={headerTitleStyle}>
               AI PREDICTION RESULT
             </Typography>
             <IconButton onClick={onClose} sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
@@ -92,10 +154,10 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
                 background: getPredictionColor(result.prediction),
                 mb: 3,
                 p: 2,
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+              <Box sx={flexCenterBox}>
                 {getPredictionIcon(result.prediction)}
                 <Typography variant="h4" sx={{ ml: 2, fontWeight: 'bold', color: 'white' }}>
                   {result.prediction}
@@ -111,8 +173,8 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
           <Typography variant="h6" sx={{ mb: 2, color: '#00d4ff' }}>
             Classification Probabilities
           </Typography>
-          
-          {Object.entries(result.probabilities).map(([category, probability], index) => (
+
+          {(Object.entries(result.probabilities) as [string, number][]).map(([category, probability], index) => (
             <motion.div
               key={category}
               initial={{ opacity: 0, x: -50 }}
@@ -120,28 +182,20 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
               transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
             >
               <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={flexBetweenBox}>
                   <Typography variant="body1">{category}</Typography>
-                  <Typography variant="body1">{((probability as number) * 100).toFixed(1)}%</Typography>
+                  <Typography variant="body1">{(Number(probability) * 100).toFixed(1)}%</Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
-                  value={(probability as number) * 100}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    '& .MuiLinearProgress-bar': {
-                      background: getPredictionColor(category),
-                      borderRadius: 4,
-                    }
-                  }}
+                  value={Number(probability) * 100}
+                  sx={probabilityBarStyle(getPredictionColor(category))}
                 />
               </Box>
             </motion.div>
           ))}
 
-          <Divider sx={{ my: 3, borderColor: 'rgba(0, 212, 255, 0.3)' }} />
+          <Divider sx={dividerStyle} />
 
           {/* Detailed Analysis */}
           <Typography variant="h6" sx={{ mb: 2, color: '#00d4ff' }}>
@@ -149,15 +203,11 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
           </Typography>
 
           <Grid container spacing={2}>
-            {/* Habitability Score */}
+            {/* Habitability */}
             <Grid item xs={12} sm={6}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-              >
-                <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', p: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
+                <Card sx={cardTransparent}>
+                  <Box sx={flexCenterBox}>
                     <Public sx={{ color: habitability.color, mr: 1 }} />
                     <Typography variant="subtitle1">Habitability</Typography>
                   </Box>
@@ -169,7 +219,7 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
                     sx={{
                       background: `linear-gradient(45deg, ${habitability.color}, ${habitability.color}aa)`,
                       color: 'white',
-                      fontWeight: 600
+                      fontWeight: 600,
                     }}
                   />
                 </Card>
@@ -178,13 +228,9 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
 
             {/* Planet Type */}
             <Grid item xs={12} sm={6}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.5 }}
-              >
-                <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', p: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.5 }}>
+                <Card sx={cardTransparent}>
+                  <Box sx={flexCenterBox}>
                     <Thermostat sx={{ color: '#ff6b35', mr: 1 }} />
                     <Typography variant="subtitle1">Planet Type</Typography>
                   </Box>
@@ -200,13 +246,9 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
 
             {/* Star Type */}
             <Grid item xs={12}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-              >
-                <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', p: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.5 }}>
+                <Card sx={cardTransparent}>
+                  <Box sx={flexCenterBox}>
                     <Star sx={{ color: '#ffaa00', mr: 1 }} />
                     <Typography variant="subtitle1">Host Star Classification</Typography>
                   </Box>
@@ -226,25 +268,18 @@ const PredictionDisplay: React.FC<PredictionDisplayProps> = ({ result, onClose }
             <Typography variant="h6" sx={{ mb: 2, color: '#00d4ff' }}>
               AI Recommendations
             </Typography>
-            
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.5 }}
-            >
-              <Card sx={{ background: 'rgba(0, 212, 255, 0.1)', p: 2, border: '1px solid rgba(0, 212, 255, 0.3)' }}>
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 0.5 }}>
+              <Card sx={cardRecommendation}>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  {result.prediction === 'CONFIRMED' && (
-                    "🎉 This object shows strong evidence of being a genuine exoplanet! Consider it for follow-up observations."
-                  )}
-                  {result.prediction === 'CANDIDATE' && (
-                    "🔍 This object requires additional verification. Consider spectroscopic follow-up or extended monitoring."
-                  )}
-                  {result.prediction === 'FALSE POSITIVE' && (
-                    "⚠️ This signal is likely caused by stellar variability or instrumental effects rather than a planetary transit."
-                  )}
+                  {result.prediction === 'CONFIRMED' &&
+                    '🎉 This object shows strong evidence of being a genuine exoplanet! Consider it for follow-up observations.'}
+                  {result.prediction === 'CANDIDATE' &&
+                    '🔍 This object requires additional verification. Consider spectroscopic follow-up or extended monitoring.'}
+                  {result.prediction === 'FALSE POSITIVE' &&
+                    '⚠️ This signal is likely caused by stellar variability or instrumental effects rather than a planetary transit.'}
                 </Typography>
-                
+
                 {result.habitability_score > 70 && (
                   <Typography variant="body2" sx={{ color: '#4caf50', mt: 1 }}>
                     ⭐ High habitability potential detected! This could be a prime target for atmospheric characterization.

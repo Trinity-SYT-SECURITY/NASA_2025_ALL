@@ -1,0 +1,4 @@
+[33m8ed3519[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m Remove root package.json for Vercel deployment - frontend root directory
+[33m05236f8[m Fix npm install timeout issue with verbose logging and clean install option
+[33meab787b[m Add root package.json and vercel.json for deployment
+[33m3306c84[m[33m ([m[1;31morigin/master[m[33m)[m Complete Exoplanet AI Discovery Platform with ML models and 3D visualization

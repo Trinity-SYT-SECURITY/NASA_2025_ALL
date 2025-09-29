@@ -23,6 +23,10 @@ const getApiBaseUrl = () => {
 const API_BASE_URL = getApiBaseUrl();
 
 console.log('API Base URL:', API_BASE_URL);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1945082 (Fix TypeScript union type error with proper type definitions and tsconfig.json)
 
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
@@ -677,14 +681,15 @@ function App() {
       } else {
         // Create new planet with epic entrance
         planetId = `predicted-${predictionCount + 1}`;
+        // Generate position based on parameters for consistency
+        const baseX = (params.koi_period % 30) - 15; // -15 to 15 based on period
+        const baseY = (params.koi_prad * 5) - 10; // 0 to 10 based on radius
+        const baseZ = (params.koi_teq / 100) - 20; // -20 to 10 based on temperature
+
         const newPlanet = {
           id: planetId,
           name: `AI Predicted ${response.data.planet_type}`,
-          position: [
-            (Math.random() - 0.5) * 40,
-            (Math.random() - 0.5) * 25,
-            (Math.random() - 0.5) * 40
-          ],
+          position: [baseX, baseY, baseZ],
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: response.data.prediction,
