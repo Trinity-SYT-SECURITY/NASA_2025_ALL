@@ -5,10 +5,24 @@ import * as THREE from 'three';
 import axios from 'axios';
 import './SimpleApp.css';
 
-// API 基礎 URL - 支援環境變數
-const API_BASE_URL = process.env.VITE_API_URL || 
-                    import.meta.env.VITE_API_URL || 
-                    'https://nasa-2025-backend.vercel.app';
+const getApiBaseUrl = () => {
+  // 嘗試多種環境變數讀取方式
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
+    if (process.env.VITE_API_URL) return process.env.VITE_API_URL;
+  }
+  
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  }
+  
+  // 默認後端 URL
+  return 'https://nasa-2025-backend.vercel.app';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+console.log('API Base URL:', API_BASE_URL);
 
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
