@@ -5,6 +5,9 @@ import * as THREE from 'three';
 import axios from 'axios';
 import './SimpleApp.css';
 
+// API 基礎 URL - 支援環境變數
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
   const { camera } = useThree();
@@ -599,8 +602,8 @@ function App() {
     const loadData = async () => {
       try {
         const [planetsRes, statsRes] = await Promise.all([
-          axios.get('http://localhost:8000/exoplanets'),
-          axios.get('http://localhost:8000/stats')
+          axios.get(`${API_BASE_URL}/exoplanets`),
+          axios.get(`${API_BASE_URL}/stats`)
         ]);
         
         if (planetsRes.data.exoplanets) {
@@ -625,7 +628,7 @@ function App() {
   const handlePredict = async (params) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/predict', params);
+      const response = await axios.post(`${API_BASE_URL}/predict`, params);
       setPrediction(response.data);
       
       // Check if we already have a predicted planet

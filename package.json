@@ -1,0 +1,17 @@
+{
+  "name": "exoplanet-ai-discovery-platform",
+  "version": "1.0.0",
+  "description": "An epic AI-powered 3D exoplanet discovery platform",
+  "scripts": {
+    "install": "cd frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "dev": "cd frontend && npm run dev"
+  },
+  "workspaces": [
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
