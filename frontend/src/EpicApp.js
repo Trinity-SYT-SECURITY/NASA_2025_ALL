@@ -5,6 +5,9 @@ import * as THREE from 'three';
 import axios from 'axios';
 import './SimpleApp.css';
 
+// 在文件頂部添加類型斷言輔助函數
+const sx = (styles) => styles;
+
 const getApiBaseUrl = () => {
   // 嘗試多種環境變數讀取方式
   if (typeof process !== 'undefined' && process.env) {
