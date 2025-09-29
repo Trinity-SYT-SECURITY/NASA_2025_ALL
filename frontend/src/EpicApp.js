@@ -23,10 +23,6 @@ const getApiBaseUrl = () => {
 const API_BASE_URL = getApiBaseUrl();
 
 console.log('API Base URL:', API_BASE_URL);
-<<<<<<< HEAD
-=======
-
->>>>>>> 1945082 (Fix TypeScript union type error with proper type definitions and tsconfig.json)
 
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
