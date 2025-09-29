@@ -6,7 +6,9 @@ import axios from 'axios';
 import './SimpleApp.css';
 
 // API 基礎 URL - 支援環境變數
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.VITE_API_URL || 
+                    import.meta.env.VITE_API_URL || 
+                    'https://nasa-2025-backend.vercel.app';
 
 // Camera Controller for smooth transitions
 function CameraController({ targetPosition, targetLookAt, isTransitioning, onTransitionEnd }) {
