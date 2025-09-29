@@ -26,20 +26,35 @@ const getApiBaseUrl = () => {
       return 'http://localhost:8000';
     }
 
-    // 檢查是否在Vercel環境
+    // 檢查是否在Vercel環境 - 直接使用Mock ML服務
     if (window.location.hostname.endsWith('.vercel.app')) {
-      // 嘗試使用後端服務，如果後端也部署在Vercel上
-      return `${window.location.protocol}//${window.location.hostname.replace('frontend', 'backend')}`;
+      console.log('🔬 Using built-in ML prediction (no backend needed)');
+      return null; // 表示使用內建ML服務
     }
   }
 
-  // 默認後端 URL（需要替換為實際部署的後端服務）
-  return 'https://nasa-2025-backend.vercel.app';
+  // 默認：使用內建ML服務
+  return null;
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
 console.log('API Base URL:', API_BASE_URL);
+
+// Test ML model loading
+const testMLModel = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/test-ml`);
+    console.log('🔬 ML Model Test Result:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('⚠️ ML Model Test Failed:', error.message);
+    return { success: false, fallback_mode: 'demo' };
+  }
+};
+
+// Initialize ML model test
+testMLModel();
 
 // 安全的 material 屬性設置函數
 const setMaterialProperty = (material, property, value) => {
@@ -688,13 +703,19 @@ function App() {
     try {
       let response;
 
-      // 嘗試使用真實API，如果失敗則使用模擬服務
-      try {
-        response = await axios.post(`${API_BASE_URL}/predict`, params);
-        console.log('✅ Using real ML API');
-      } catch (apiError) {
-        console.log('⚠️ API not available, using mock ML service');
+      // 檢查是否使用內建ML服務
+      if (API_BASE_URL === null) {
+        console.log('🔬 Using built-in ML prediction service');
         response = await MockMLService.predict(params);
+      } else {
+        // 嘗試使用真實API，如果失敗則使用模擬服務
+        try {
+          response = await axios.post(`${API_BASE_URL}/predict`, params);
+          console.log('✅ Using real ML API');
+        } catch (apiError) {
+          console.log('⚠️ API not available, using mock ML service');
+          response = await MockMLService.predict(params);
+        }
       }
 
       setPrediction(response);

@@ -204,7 +204,43 @@ async def demo():
         "koi_insol": 1.0
     }
     result = await predict(earth_data)
-    return {"input": earth_data, "prediction": result}
+    return {
+        "input": earth_data,
+        "prediction": result,
+        "ml_model_loaded": models_loaded,
+        "model_type": type(ml_model).__name__ if ml_model else "None"
+    }
+
+@app.get("/test-ml")
+async def test_ml():
+    """Test if ML model is properly loaded and working"""
+    test_data = {
+        "koi_period": 365.25,
+        "koi_prad": 1.0,
+        "koi_teq": 288,
+        "koi_steff": 5778,
+        "koi_insol": 1.0
+    }
+
+    try:
+        result = await predict(test_data)
+        return {
+            "success": True,
+            "ml_loaded": models_loaded,
+            "test_prediction": result,
+            "model_info": {
+                "type": type(ml_model).__name__ if ml_model else "None",
+                "has_predict": hasattr(ml_model, 'predict') if ml_model else False,
+                "has_predict_proba": hasattr(ml_model, 'predict_proba') if ml_model else False
+            }
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "ml_loaded": models_loaded,
+            "fallback_mode": "demo"
+        }
 
 if __name__ == "__main__":
     import uvicorn
