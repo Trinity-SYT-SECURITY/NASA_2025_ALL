@@ -1,0 +1,907 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;600;700;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  font-family: 'Orbitron', monospace;
+  overflow: hidden;
+  position: relative;
+}
+
+.universe-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Enhanced Planet Labels */
+.planet-label {
+  background: rgba(0, 212, 255, 0.9);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+  border: 1px solid rgba(0, 212, 255, 0.5);
+  backdrop-filter: blur(15px);
+  white-space: nowrap;
+  pointer-events: none;
+  text-align: center;
+  min-width: 140px;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.planet-label.pulsing {
+  animation: pulse 2s infinite;
+}
+
+.planet-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+  color: white;
+}
+
+.planet-info {
+  font-size: 10px;
+  opacity: 1;
+  color: white;
+}
+
+.predicted-badge {
+  background: linear-gradient(45deg, #FF6B35, #F7931E);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 9px;
+  margin-top: 3px;
+  font-weight: 700;
+}
+
+/* Enhanced Planet Label Styles */
+.planet-label.predicted {
+  border-color: rgba(255, 107, 53, 0.8);
+  background: rgba(255, 107, 53, 0.2);
+  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+}
+
+.planet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.status.confirmed {
+  background: rgba(76, 175, 80, 0.3);
+  color: #4CAF50;
+}
+
+.status.candidate {
+  background: rgba(255, 152, 0, 0.3);
+  color: #FF9800;
+}
+
+.habitability {
+  font-size: 8px;
+  opacity: 1;
+  color: white;
+}
+
+/* Enhanced Panel Styles */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.overview-button {
+  background: linear-gradient(45deg, #00d4ff, #0093cc);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.overview-button:hover {
+  background: linear-gradient(45deg, #0093cc, #006699);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+}
+
+.planet-preview {
+  text-align: center;
+  margin: 15px 0 25px 0;
+  flex-shrink: 0;
+}
+
+.detail-grid.enhanced {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-icon {
+  font-size: 18px;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.detail-label {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+.detail-value {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.habitability-meter.enhanced {
+  margin: 20px 0 25px 0;
+  flex-shrink: 0;
+}
+
+.meter-label {
+  font-size: 12px;
+  margin-bottom: 8px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.ai-prediction-info {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.ai-prediction-info h4 {
+  margin: 0 0 10px 0;
+  color: #FF6B35;
+  font-size: 14px;
+}
+
+.prediction-confidence {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* AI Panel */
+.ai-panel {
+  position: fixed;
+  top: 20px;
+  left: 50px;
+  width: 420px;
+  max-height: calc(100vh - 40px);
+  background: rgba(10, 10, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(0, 212, 255, 0.4);
+  border-radius: 20px;
+  padding: 25px 25px 25px 35px;
+  color: white;
+  z-index: 1000;
+  box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ai-panel h2 {
+  color: #00d4ff;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+/* Enhanced Presets */
+.presets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.preset-btn {
+  padding: 8px 6px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.preset-btn.earth {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  color: white;
+}
+
+.preset-btn.jupiter {
+  background: linear-gradient(135deg, #FF5722, #D32F2F);
+  color: white;
+}
+
+.preset-btn.super {
+  background: linear-gradient(135deg, #2196F3, #1565C0);
+  color: white;
+}
+
+.preset-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Parameter Grid */
+.param-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.param-item label {
+  display: block;
+  margin-bottom: 5px;
+  color: #cccccc;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.param-item input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 10px;
+  color: white;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.param-item input:focus {
+  outline: none;
+  border-color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.predict-button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #00d4ff, #0093cc);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.predict-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
+}
+
+.predict-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Prediction Results */
+.prediction-results {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.prediction-results h3 {
+  color: #00d4ff;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.result-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.result-label {
+  font-size: 0.75rem;
+  color: #cccccc;
+  margin-bottom: 4px;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.result-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #00d4ff;
+  line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Planet Details */
+.planet-details {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 380px;
+  max-width: 90vw;
+  max-height: 85vh;
+  background: rgba(30, 10, 40, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 107, 53, 0.4);
+  border-radius: 20px;
+  padding: 25px;
+  color: white;
+  z-index: 2000;
+  box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.planet-details h2 {
+  color: #ff6b35;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #ff6b35;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-button:hover {
+  background: rgba(255, 107, 53, 0.2);
+  transform: scale(1.1);
+}
+
+.detail-grid {
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-label {
+  color: #cccccc;
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+.status-confirmed { color: #00ff08; }
+.status-candidate { color: #FF9800; }
+.status-false { color: #F44336; }
+
+.habitability-meter {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.meter-label {
+  font-size: 0.9rem;
+  color: #cccccc;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.meter-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.meter-fill {
+  height: 100%;
+  transition: width 0.8s ease;
+  border-radius: 6px;
+}
+
+.meter-text {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+/* Stats Dashboard */
+.stats-dashboard {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(20, 40, 20, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
+  z-index: 1500;
+  min-width: 250px;
+  max-width: 300px;
+  box-shadow: 0 10px 40px rgba(76, 175, 80, 0.2);
+}
+
+.stats-dashboard h3 {
+  color: #4caf50;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4caf50;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #cccccc;
+}
+
+/* Loading Screen */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.loading-content {
+  text-align: center;
+  color: #00d4ff;
+}
+
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 4px solid rgba(0, 212, 255, 0.3);
+  border-top: 4px solid #00d4ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 30px;
+}
+
+.loading-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+}
+
+.loading-subtext {
+  font-size: 1rem;
+  opacity: 0.8;
+  color: #cccccc;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .ai-panel {
+    width: 300px;
+  }
+  
+  .planet-details {
+    width: 280px;
+  }
+  
+  .param-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-panel {
+    width: calc(100vw - 40px);
+    top: 10px;
+    left: 20px;
+  }
+  
+  .planet-details {
+    width: calc(100vw - 40px);
+    top: auto;
+    bottom: 10px;
+    right: 20px;
+  }
+  
+  .stats-dashboard {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+  
+  .presets {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  
+  .preset-btn {
+    padding: 10px;
+    font-size: 11px;
+  }
+}
+
+/* Animation Effects */
+.fade-in {
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Glow Effects */
+.glow {
+  text-shadow: 0 0 20px currentColor;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Epic Enhanced Styles */
+.epic-app {
+  background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.epic-panel {
+  background: rgba(5, 5, 20, 0.98) !important;
+  border: 2px solid rgba(0, 212, 255, 0.6) !important;
+  box-shadow: 0 15px 50px rgba(0, 212, 255, 0.3) !important;
+}
+
+.panel-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ai-status {
+  font-size: 0.8rem;
+  color: #4CAF50;
+  margin-top: 5px;
+}
+
+.presets-grid .preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px !important;
+  min-height: 60px;
+}
+
+.preset-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.preset-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.preset-btn.earth {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32) !important;
+}
+
+.preset-btn.hotJupiter {
+  background: linear-gradient(135deg, #FF5722, #D32F2F) !important;
+}
+
+.preset-btn.superEarth {
+  background: linear-gradient(135deg, #2196F3, #1565C0) !important;
+}
+
+.preset-btn.frozen {
+  background: linear-gradient(135deg, #00BCD4, #0097A7) !important;
+}
+
+.param-unit {
+  position: absolute;
+  right: 15px;
+  top: 35px;
+  font-size: 0.8rem;
+  color: #888;
+  pointer-events: none;
+}
+
+.predict-button.epic {
+  background: linear-gradient(135deg, #00d4ff, #0093cc, #FF6B35) !important;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  padding: 18px !important;
+  font-size: 1.2rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-icon {
+  font-size: 1.3rem;
+}
+
+.prediction-results.epic {
+  background: rgba(0, 212, 255, 0.15) !important;
+  border: 2px solid rgba(0, 212, 255, 0.4) !important;
+}
+
+.result-grid.enhanced {
+  gap: 15px;
+}
+
+.result-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.result-card.primary {
+  background: rgba(0, 212, 255, 0.2);
+}
+
+.result-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+.result-content {
+  flex: 1;
+}
+
+.probability-breakdown {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.probability-breakdown h4 {
+  color: #00d4ff;
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+.prob-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.prob-label {
+  min-width: 120px;
+  font-size: 0.9rem;
+}
+
+.prob-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.prob-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff, #4CAF50);
+  transition: width 0.8s ease;
+}
+
+.prob-value {
+  min-width: 50px;
+  text-align: right;
+  font-weight: 600;
+  color: #00d4ff;
+}
+
+.loading-screen.epic {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+.loading-spinner.epic {
+  width: 100px !important;
+  height: 100px !important;
+  border: 5px solid rgba(0, 212, 255, 0.3) !important;
+  border-top: 5px solid #00d4ff !important;
+  border-right: 5px solid #FF6B35 !important;
+}
+
+.loading-progress {
+  width: 300px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff, #FF6B35);
+  animation: progressMove 2s ease-in-out infinite;
+}
+
+@keyframes progressMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.ai-prediction-badge {
+  background: linear-gradient(45deg, #FF6B35, #00d4ff);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 15px;
+  animation: pulse 2s infinite;
+}
