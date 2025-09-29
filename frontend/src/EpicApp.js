@@ -110,7 +110,14 @@ function RealisticPlanet({ position, radius, color, name, data, onClick, isAnima
         
         // Pulsing atmosphere
         if (atmosphereRef.current) {
-          atmosphereRef.current.material.opacity = 0.3 + Math.sin(time * 4) * 0.2;
+          const material = atmosphereRef.current.material;
+          if (Array.isArray(material)) {
+            material.forEach((mat) => {
+              mat.opacity = 0.3 + Math.sin(time * 4) * 0.2;
+            });
+          } else {
+            material.opacity = 0.3 + Math.sin(time * 4) * 0.2;
+          }
         }
       } else {
         // Subtle orbital motion
