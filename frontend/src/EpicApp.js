@@ -778,26 +778,45 @@ function App() {
       };
       setPrediction(demoPrediction);
       
-      // Still create the planet for visual effect
-      const demoPlanetId = `demo-${Date.now()}-${Math.random()}`;
-      const newPlanet = {
-        id: demoPlanetId,
-        name: "AI Predicted Earth-like",
-        position: [
-          (Math.random() - 0.5) * 40,
-          (Math.random() - 0.5) * 25, 
-          (Math.random() - 0.5) * 40
-        ],
-        radius: params.koi_prad,
-        temperature: params.koi_teq,
-        disposition: "CANDIDATE",
-        habitability: 85,
-        color: '#FF9800'
-      };
-      
-      setExoplanets(prev => [...prev, newPlanet]);
-      setAnimatingPlanetId(newPlanet.id);
-      setPredictedPlanetIds(prev => [...prev, newPlanet.id]);
+      // Use fixed demo planet instead of creating new ones
+      const demoPlanetId = 'demo-main';
+      const existingDemoIndex = exoplanets.findIndex(planet =>
+        planet.id === demoPlanetId
+      );
+
+      if (existingDemoIndex !== -1) {
+        // Update existing demo planet
+        const updatedPlanet = {
+          ...exoplanets[existingDemoIndex],
+          name: "AI Predicted Earth-like",
+          radius: params.koi_prad,
+          temperature: params.koi_teq,
+          disposition: "CANDIDATE",
+          habitability: 85,
+          color: '#FF9800'
+        };
+
+        setExoplanets(prev => prev.map((planet, index) =>
+          index === existingDemoIndex ? updatedPlanet : planet
+        ));
+        setAnimatingPlanetId(updatedPlanet.id);
+      } else {
+        // Create demo planet (only once)
+        const newPlanet = {
+          id: demoPlanetId,
+          name: "AI Predicted Earth-like",
+          position: [10, 3, -15], // Fixed position for demo planet
+          radius: params.koi_prad,
+          temperature: params.koi_teq,
+          disposition: "CANDIDATE",
+          habitability: 85,
+          color: '#FF9800'
+        };
+
+        setExoplanets(prev => [...prev, newPlanet]);
+        setAnimatingPlanetId(newPlanet.id);
+        setPredictedPlanetIds(prev => [...prev, newPlanet.id]);
+      }
       setTimeout(() => setAnimatingPlanetId(null), 8000);
     } finally {
       setLoading(false);
