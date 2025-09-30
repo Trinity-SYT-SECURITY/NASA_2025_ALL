@@ -44,6 +44,56 @@ graph TB
     C --> C4[Feature Engineering]
 ```
 
+## 🚀 Deployment Architecture
+
+### Development Deployment
+- **Frontend**: React development server (localhost:3000)
+- **Backend**: FastAPI with ngrok tunneling (https://483d13a1412e.ngrok-free.app)
+- **Database**: None required - stateless prediction service
+
+### Production Deployment
+- **Frontend**: Vercel (https://nasa-2025-frontend.vercel.app)
+- **Backend**: Vercel serverless functions (https://nasa-2025.vercel.app)
+- **ML Models**: Embedded in backend deployment
+
+### Alternative Backend Hosting
+- **Railway** or **Render**: Recommended for ML models > 300MB
+- **AWS Lambda**: With S3 model storage
+- **Google Cloud Run**: With Cloud Storage
+
+## 🔧 Vercel Configuration
+
+### Frontend (nasa-2025-frontend.vercel.app)
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install"
+}
+```
+
+### Backend (nasa-2025.vercel.app)
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/index.py"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": "/var/task"
+  }
+}
+```
+
 ## 📋 Feature Highlights
 
 ### 🤖 AI Machine Learning System
@@ -116,8 +166,17 @@ python exoplanet_classifier.py
 
 #### 4. Start Backend Service
 ```bash
+# Option 1: Local development with ngrok (recommended for testing)
 cd backend
 python ultra_simple_api.py
+# In another terminal:
+ngrok http 8000
+# Use the ngrok URL for frontend API calls
+
+# Option 2: Direct local development
+cd backend
+python ultra_simple_api.py
+# Frontend will connect to http://localhost:8000
 ```
 
 #### 5. Frontend Setup
@@ -128,9 +187,14 @@ npm start
 ```
 
 #### 6. Access Application
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000 (local) or ngrok URL
+- **API Documentation**: http://localhost:8000/docs
+
+#### 7. Deployment URLs
+- **Frontend**: https://nasa-2025-frontend.vercel.app
+- **Backend**: https://nasa-2025.vercel.app
+- **ngrok Backend**: https://483d13a1412e.ngrok-free.app
 
 ## 🎯 Usage Guide
 
@@ -189,20 +253,35 @@ npm start
 ```
 exoplanet-ai-discovery-platform/
 ├── data/                    # NASA KOI datasets
+│   └── cumulative_2025.09.16_22.42.55.csv
 ├── ml/                      # Machine learning models and training
 │   ├── exoplanet_classifier.py
 │   ├── data_preprocessing.py
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── *.joblib             # Trained model files
 ├── backend/                 # FastAPI backend services
 │   ├── main.py
 │   ├── simple_api.py
-│   └── ultra_simple_api.py
+│   ├── ultra_simple_api.py
+│   ├── api/
+│   │   └── index.py        # Vercel serverless entry point
+│   ├── requirements.txt
+│   ├── vercel.json
+│   └── Dockerfile
 ├── frontend/                # React frontend application
 │   ├── src/
 │   │   ├── components/     # React components
-│   │   ├── store/          # State management
-│   │   └── App.js          # Main application component
-│   └── package.json
+│   │   ├── services/       # API and ML services
+│   │   │   └── mockMLService.ts
+│   │   ├── EpicApp.js      # Main 3D application
+│   │   └── SimpleApp.css   # Styling
+│   ├── package.json
+│   └── public/
+│       └── manifest.json
+├── .gitignore
+├── README.md
+├── Dockerfile              # Full-stack Docker container
+├── docker-compose.yml      # Multi-container orchestration
 └── docs/                    # Documentation and demos
 ```
 

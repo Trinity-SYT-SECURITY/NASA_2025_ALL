@@ -726,7 +726,7 @@ function App() {
         // Update existing predicted planet
         const updatedPlanet = {
           ...exoplanets[existingPredictedIndex],
-          name: response.planet_name || `AI Predicted ${response.planet_type}`,
+          name: response.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: response.prediction,
@@ -745,7 +745,7 @@ function App() {
         // Create the main predicted planet (only once)
         const newPlanet = {
           id: planetId,
-          name: response.planet_name || `AI Predicted ${response.planet_type}`,
+          name: response.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
           position: [15, 5, -10], // Fixed position for the predicted planet
           radius: params.koi_prad,
           temperature: params.koi_teq,
@@ -802,7 +802,7 @@ function App() {
         // Update existing demo planet
         const updatedPlanet = {
           ...exoplanets[existingDemoIndex],
-          name: "AI Predicted Earth-like",
+          name: `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: "CANDIDATE",
@@ -818,7 +818,7 @@ function App() {
         // Create demo planet (only once)
         const newPlanet = {
           id: demoPlanetId,
-          name: "AI Predicted Earth-like",
+          name: `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
           position: [10, 3, -15], // Fixed position for demo planet
           radius: params.koi_prad,
           temperature: params.koi_teq,
