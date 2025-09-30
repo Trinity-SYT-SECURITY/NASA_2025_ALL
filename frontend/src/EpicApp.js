@@ -26,17 +26,14 @@ const getApiBaseUrl = () => {
       return 'http://localhost:8000'; // Local development uses local backend
     }
 
-    // Check if in Vercel environment - use Vercel backend
+    // Check if in Vercel environment - use ngrok backend
     if (window.location.hostname.endsWith('.vercel.app')) {
-      // Extract the backend URL from the current frontend URL
-      const currentHost = window.location.hostname;
-      const backendHost = currentHost.replace('nasa-2025-frontend', 'nasa-2025');
-      return `${window.location.protocol}//${backendHost}`;
+      return 'https://483d13a1412e.ngrok-free.app';
     }
   }
 
-  // Default: use Vercel backend
-  return 'https://nasa-2025-git-main-founts-projects-9604381d.vercel.app';
+  // Default: use ngrok backend
+  return 'https://483d13a1412e.ngrok-free.app';
 };
 
 const API_BASE_URL = getApiBaseUrl();
