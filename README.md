@@ -66,31 +66,16 @@ graph TB
 
 ## 📊 Machine Learning Model Details
 
-### Training Dataset
-- **Source**: NASA Kepler Objects of Interest (KOI) Dataset
-- **Sample Count**: 9,564 exoplanet candidates
-- **Feature Count**: 20 key astrophysical parameters
-- **Target Classes**: CONFIRMED, CANDIDATE, FALSE POSITIVE
+For detailed ML training results, model performance charts, and technical analysis, please see our comprehensive [ML Training Results Documentation](docs/ml_training_results.md).
 
-### Feature Engineering
-```python
-# Core features include:
-- koi_period: Orbital period (days)
-- koi_prad: Planet radius (Earth radii)
-- koi_teq: Equilibrium temperature (K)
-- koi_steff: Stellar effective temperature (K)
-- koi_insol: Insolation flux
-- koi_slogg: Stellar surface gravity
-- habitable_zone: Auto-calculated habitability zone flag
-```
+### Quick Overview
 
-### Model Performance
-- **Best Model**: Voting Classifier ensemble
-- **Accuracy**: 92.16%
-- **Cross-Validation**: 5-fold CV for robustness
-- **Feature Importance**: Automated identification of key predictive features
+- **Training Dataset**: NASA Kepler Objects of Interest (KOI) - 9,564 samples
+- **Best Model**: XGBoost ensemble achieving **92.16% accuracy**
+- **Key Features**: 20 astrophysical parameters including orbital period, planet radius, temperature
+- **Real-time Prediction**: Sub-second inference for user inputs
 
-### 📈 Model Performance Comparison
+### 📈 Model Performance Summary
 
 | Model | Accuracy | Precision | Recall | F1-Score |
 |-------|----------|-----------|--------|----------|
@@ -99,16 +84,6 @@ graph TB
 | **Gradient Boosting** | 92.00% | 91.87% | 92.00% | 91.92% |
 | **Random Forest** | 91.85% | 91.72% | 91.85% | 91.76% |
 | **Logistic Regression** | 87.34% | 87.12% | 87.34% | 87.20% |
-
-### 🎯 Top Feature Importance
-
-| Feature | Importance | Description |
-|---------|------------|-------------|
-| **koi_score** | 22.9% | Disposition confidence score |
-| **koi_fpflag_nt** | 21.2% | Not transit-like flag |
-| **koi_fpflag_co** | 15.9% | Centroid offset flag |
-| **koi_fpflag_ss** | 13.6% | Stellar eclipse flag |
-| **koi_fpflag_ec** | 10.1% | Contamination flag |
 
 ## 🚀 Quick Start
 

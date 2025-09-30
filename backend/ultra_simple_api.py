@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import json
+import random
+import os
 
 # Create app without automatic docs generation issues
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -34,6 +36,55 @@ except Exception as e:
     ml_model = scaler = label_encoder = None
     models_loaded = False
     print(f"⚠️ Running in demo mode - Error loading models: {e}")
+
+def generate_planet_name(data: dict, prediction: str) -> str:
+    """Generate a realistic Kepler planet name based on characteristics"""
+    radius = data.get('koi_prad', 1.0)
+    temp = data.get('koi_teq', 288)
+
+    # Different planet categories based on characteristics
+    if temp >= 200 and temp <= 300 and radius >= 0.8 and radius <= 1.5:
+        # Earth-like planets
+        earth_like = [
+            "Kepler-442 b", "Kepler-186 f", "Kepler-452 b", "Kepler-62 f",
+            "Kepler-283 c", "Kepler-296 f", "Kepler-438 b", "Kepler-440 b"
+        ]
+        return random.choice(earth_like)
+    elif radius > 1.5 and radius <= 3.0:
+        # Super-Earth planets
+        super_earth = [
+            "Kepler-22 b", "Kepler-69 c", "Kepler-62 e", "Kepler-61 b",
+            "Kepler-102 e", "Kepler-107 c", "Kepler-108 c", "Kepler-122 e"
+        ]
+        return random.choice(super_earth)
+    elif radius > 3.0 and radius <= 6.0:
+        # Neptune-like planets
+        neptune_like = [
+            "Kepler-10 c", "Kepler-18 d", "Kepler-51 d", "Kepler-68 d",
+            "Kepler-419 b", "Kepler-420 b", "Kepler-421 b", "Kepler-422 b"
+        ]
+        return random.choice(neptune_like)
+    elif radius > 6.0:
+        # Gas giant planets
+        gas_giants = [
+            "Kepler-7 b", "Kepler-8 b", "Kepler-12 b", "Kepler-13 b",
+            "Kepler-14 b", "Kepler-15 b", "Kepler-16 b", "Kepler-17 b"
+        ]
+        return random.choice(gas_giants)
+    elif temp > 1000:
+        # Hot planets
+        hot_planets = [
+            "Kepler-10 b", "Kepler-78 b", "Kepler-406 b", "Kepler-412 b",
+            "Kepler-41 b", "Kepler-43 b", "Kepler-44 b", "Kepler-45 b"
+        ]
+        return random.choice(hot_planets)
+    else:
+        # Other planets
+        other_planets = [
+            "Kepler-227 b", "Kepler-227 c", "Kepler-23 b", "Kepler-24 b",
+            "Kepler-25 b", "Kepler-26 b", "Kepler-27 b", "Kepler-28 b"
+        ]
+        return random.choice(other_planets)
 
 @app.get("/")
 async def root():
@@ -143,12 +194,16 @@ async def predict(data: dict):
         elif temp < 7500: star_type = "F-dwarf"
         else: star_type = "A-dwarf"
         
+        # Generate realistic planet name based on characteristics
+        planet_name = generate_planet_name(data, pred_str)
+
         return {
             "prediction": pred_str,
             "probabilities": prob_dict,
             "confidence": float(max(probs)),
             "habitability_score": hab_score,
             "planet_type": planet_type,
+            "planet_name": planet_name,
             "star_type": star_type,
             "status": "ml_prediction"
         }
@@ -242,10 +297,5 @@ async def test_ml():
             "fallback_mode": "demo"
         }
 
-if __name__ == "__main__":
-    import uvicorn
-    print("🌌 STARTING EXOPLANET AI PLATFORM...")
-    print("🚀 Backend: http://localhost:8000")
-    print("🔧 To deploy backend, use Railway, Render, or Heroku")
-    print("📚 Endpoints: /health, /stats, /predict, /demo, /exoplanets")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# For Vercel deployment, the app will be served by the serverless function
+# No need to run uvicorn manually

@@ -10,7 +10,7 @@ import './SimpleApp.css';
 const sx = (styles) => styles;
 
 const getApiBaseUrl = () => {
-  // 嘗試多種環境變數讀取方式
+  // Try multiple environment variable sources
   if (typeof process !== 'undefined' && process.env) {
     if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
     if (process.env.VITE_API_URL) return process.env.VITE_API_URL;
@@ -20,21 +20,23 @@ const getApiBaseUrl = () => {
     if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   }
 
-  // 檢查是否在開發環境
+  // Check if in development environment
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:8000'; // 本地開發使用本地後端
+      return 'http://localhost:8000'; // Local development uses local backend
     }
 
-    // 檢查是否在Vercel環境 - 使用ngrok後端
+    // Check if in Vercel environment - use Vercel backend
     if (window.location.hostname.endsWith('.vercel.app')) {
-      console.log('🔗 Using ngrok backend service');
-      return 'https://483d13a1412e.ngrok-free.app'; // 用戶的ngrok後端URL
+      // Extract the backend URL from the current frontend URL
+      const currentHost = window.location.hostname;
+      const backendHost = currentHost.replace('nasa-2025-frontend', 'nasa-2025');
+      return `${window.location.protocol}//${backendHost}`;
     }
   }
 
-  // 默認：使用ngrok後端
-  return 'https://483d13a1412e.ngrok-free.app';
+  // Default: use Vercel backend
+  return 'https://nasa-2025-git-main-founts-projects-9604381d.vercel.app';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -703,12 +705,12 @@ function App() {
     try {
       let response;
 
-      // 嘗試使用真實API
+      // Try to use real ML API first
       try {
         response = await axios.post(`${API_BASE_URL}/predict`, params);
         console.log('✅ Using real ML API');
       } catch (apiError) {
-        console.log('⚠️ API not available, using mock ML service');
+        console.log('⚠️ Real API failed, using mock ML service');
         response = await MockMLService.predict(params);
       }
 
@@ -727,7 +729,7 @@ function App() {
         // Update existing predicted planet
         const updatedPlanet = {
           ...exoplanets[existingPredictedIndex],
-          name: `AI Predicted ${response.planet_type}`,
+          name: response.planet_name || `AI Predicted ${response.planet_type}`,
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: response.prediction,
@@ -746,7 +748,7 @@ function App() {
         // Create the main predicted planet (only once)
         const newPlanet = {
           id: planetId,
-          name: `AI Predicted ${response.planet_type}`,
+          name: response.planet_name || `AI Predicted ${response.planet_type}`,
           position: [15, 5, -10], // Fixed position for the predicted planet
           radius: params.koi_prad,
           temperature: params.koi_teq,

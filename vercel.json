@@ -3,6 +3,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "installCommand": "npm install",
-  "framework": "create-react-app"
+  "framework": "create-react-app",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://nasa-2025-git-main-founts-projects-9604381d.vercel.app/api/$1"
+    }
+  ]
 }
   

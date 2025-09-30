@@ -19,16 +19,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware for frontend integration
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify exact origins
+    allow_origins=["*"],  # TODO: production環境請限制來源
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Global variables for models and data
+# === Global variables ===
 ml_model = None
 scaler = None
 label_encoder = None
@@ -80,12 +80,12 @@ class ExoplanetData(BaseModel):
     dec: float
     habitability_score: float
 
-try:
-    # Load ML models at startup
-    ml_model = joblib.load('../ml/exoplanet_model_best.joblib')
-    scaler = joblib.load('../ml/scaler.joblib')
-    label_encoder = joblib.load('../ml/label_encoder.joblib')
-        
+    try:
+        # Load ML models at startup
+        ml_model = joblib.load('../ml/exoplanet_model_best.joblib')
+        scaler = joblib.load('../ml/scaler.joblib')
+        label_encoder = joblib.load('../ml/label_encoder.joblib')
+            
         # Load feature names
         feature_names = [
             'koi_period', 'koi_duration', 'koi_depth', 'koi_prad', 'koi_teq', 
@@ -104,42 +104,32 @@ try:
         print(f"Error loading models: {e}")
         # For development, continue without models
         pass
-
-def prepare_visualization_data(df):
+    
+    
+# Function to prepare exoplanet data for visualization
+def prepare_visualization_data(df: pd.DataFrame):
     """Prepare exoplanet data for 3D visualization"""
-    # Filter confirmed and candidate exoplanets
     viz_data = df[df['koi_disposition'].isin(['CONFIRMED', 'CANDIDATE'])].copy()
-    
-    # Clean and prepare data
     viz_data = viz_data.dropna(subset=['koi_period', 'koi_prad', 'koi_teq', 'koi_steff'])
-    
-    # Calculate habitability score
+
     def calculate_habitability(row):
         score = 0.0
-        
-        # Temperature habitability (0-40 points)
-        if 273 <= row['koi_teq'] <= 373:  # Liquid water range
+        if 273 <= row['koi_teq'] <= 373:
             score += 40
-        elif 200 <= row['koi_teq'] <= 400:  # Extended range
+        elif 200 <= row['koi_teq'] <= 400:
             score += 20
-        
-        # Size habitability (0-30 points)
-        if 0.8 <= row['koi_prad'] <= 1.5:  # Earth-like
+        if 0.8 <= row['koi_prad'] <= 1.5:
             score += 30
-        elif 0.5 <= row['koi_prad'] <= 2.0:  # Extended range
+        elif 0.5 <= row['koi_prad'] <= 2.0:
             score += 15
-        
-        # Insolation habitability (0-30 points)
-        if 0.25 <= row['koi_insol'] <= 1.5:  # Habitable zone
+        if 0.25 <= row['koi_insol'] <= 1.5:
             score += 30
-        elif 0.1 <= row['koi_insol'] <= 4.0:  # Extended range
+        elif 0.1 <= row['koi_insol'] <= 4.0:
             score += 10
-        
         return min(score, 100)
-    
+
     viz_data['habitability_score'] = viz_data.apply(calculate_habitability, axis=1)
-    
-    # Convert to list of dictionaries
+
     exoplanets = []
     for _, row in viz_data.iterrows():
         exoplanet = {
@@ -156,8 +146,36 @@ def prepare_visualization_data(df):
             'habitability_score': row['habitability_score']
         }
         exoplanets.append(exoplanet)
-    
+
     return exoplanets
+
+
+
+# ---------------- Startup loader ----------------
+@app.on_event("startup")
+def load_models_and_data():
+    global ml_model, scaler, label_encoder, feature_names, exoplanet_data
+    try:
+        ml_model = joblib.load('../ml/exoplanet_model_best.joblib')
+        scaler = joblib.load('../ml/scaler.joblib')
+        label_encoder = joblib.load('../ml/label_encoder.joblib')
+
+        feature_names = [
+            'koi_period', 'koi_duration', 'koi_depth', 'koi_prad', 'koi_teq',
+            'koi_insol', 'koi_model_snr', 'koi_steff', 'koi_slogg', 'koi_srad',
+            'koi_smass', 'koi_kepmag', 'koi_fpflag_nt', 'koi_fpflag_ss',
+            'koi_fpflag_co', 'koi_fpflag_ec', 'ra', 'dec', 'habitable_zone', 'koi_score'
+        ]
+
+        df = pd.read_csv('../data/cumulative_2025.09.16_22.42.55.csv')
+        exoplanet_data = prepare_visualization_data(df)
+
+        print("✅ Models and data loaded successfully")
+
+    except Exception as e:
+        print(f"⚠️ Error loading models or data: {e}")
+        ml_model = None
+        exoplanet_data = None
 
 @app.get("/")
 async def root():
