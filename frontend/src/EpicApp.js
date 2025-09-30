@@ -26,15 +26,15 @@ const getApiBaseUrl = () => {
       return 'http://localhost:8000';
     }
 
-    // 檢查是否在Vercel環境 - 直接使用Mock ML服務
+    // 檢查是否在Vercel環境 - 使用ngrok後端
     if (window.location.hostname.endsWith('.vercel.app')) {
-      console.log('🔬 Using built-in ML prediction (no backend needed)');
-      return null; // 表示使用內建ML服務
+      console.log('🔗 Using ngrok backend service');
+      return 'https://483d13a1412e.ngrok-free.app'; // 用戶的ngrok後端URL
     }
   }
 
-  // 默認：使用內建ML服務
-  return null;
+  // 默認：使用ngrok後端
+  return 'https://483d13a1412e.ngrok-free.app';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -708,15 +708,15 @@ function App() {
         console.log('🔬 Using built-in ML prediction service');
         response = await MockMLService.predict(params);
       } else {
-        // 嘗試使用真實API，如果失敗則使用模擬服務
-        try {
-          const apiResponse = await axios.post(`${API_BASE_URL}/predict`, params);
-          response = apiResponse.data; // API返回的是data屬性中的物件
-          console.log('✅ Using real ML API');
-        } catch (apiError) {
-          console.log('⚠️ API not available, using mock ML service');
-          response = await MockMLService.predict(params);
-        }
+      // 嘗試使用真實API，如果失敗則使用模擬服務
+      try {
+        const apiResponse = await axios.post(`${API_BASE_URL}/predict`, params);
+        response = apiResponse.data; // API返回的是data屬性中的物件
+        console.log('✅ Using real ML API');
+      } catch (apiError) {
+        console.log('⚠️ API not available, using mock ML service');
+        response = await MockMLService.predict(params);
+      }
       }
 
       setPrediction(response);
@@ -727,13 +727,6 @@ function App() {
         planet.id === fixedPlanetId
       );
 
-      console.log('🔍 Prediction Debug:', {
-        existingPredictedIndex,
-        exoplanetsLength: exoplanets.length,
-        hasPredictedPlanet,
-        params
-      });
-
       let targetPlanet;
       let planetId = fixedPlanetId;
 
@@ -741,13 +734,13 @@ function App() {
         // Update existing predicted planet
         const updatedPlanet = {
           ...exoplanets[existingPredictedIndex],
-          name: `AI Predicted ${response.data.planet_type}`,
+          name: `AI Predicted ${response.planet_type}`,
           radius: params.koi_prad,
           temperature: params.koi_teq,
-          disposition: response.data.prediction,
-          habitability: response.data.habitability_score,
-          color: response.data.prediction === 'CONFIRMED' ? '#4CAF50' :
-                 response.data.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
+          disposition: response.prediction,
+          habitability: response.habitability_score,
+          color: response.prediction === 'CONFIRMED' ? '#4CAF50' :
+                 response.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
         };
 
         setExoplanets(prev => prev.map((planet, index) =>
@@ -760,14 +753,14 @@ function App() {
         // Create the main predicted planet (only once)
         const newPlanet = {
           id: planetId,
-          name: `AI Predicted ${response.data.planet_type}`,
+          name: `AI Predicted ${response.planet_type}`,
           position: [15, 5, -10], // Fixed position for the predicted planet
           radius: params.koi_prad,
           temperature: params.koi_teq,
-          disposition: response.data.prediction,
-          habitability: response.data.habitability_score,
-          color: response.data.prediction === 'CONFIRMED' ? '#4CAF50' :
-                 response.data.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
+          disposition: response.prediction,
+          habitability: response.habitability_score,
+          color: response.prediction === 'CONFIRMED' ? '#4CAF50' :
+                 response.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
         };
 
         setExoplanets(prev => [...prev, newPlanet]);
@@ -778,14 +771,10 @@ function App() {
       }
 
       // Jump camera to predicted planet
-      console.log('🎯 Jumping to planet:', targetPlanet);
       const planetPos = new THREE.Vector3(...targetPlanet.position);
       const distance = Math.max(targetPlanet.radius * 5, 10);
       const cameraPos = planetPos.clone().add(new THREE.Vector3(distance, distance * 0.7, distance));
-
-      console.log('📍 Camera position:', cameraPos);
-      console.log('👁️ Planet position:', planetPos);
-
+      
       setCameraTarget(cameraPos);
       setCameraLookAt(planetPos);
       setIsTransitioning(true);
