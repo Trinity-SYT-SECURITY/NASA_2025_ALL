@@ -80,12 +80,12 @@ class ExoplanetData(BaseModel):
     dec: float
     habitability_score: float
 
-    try:
-        # Load ML models at startup
-        ml_model = joblib.load('../ml/exoplanet_model_best.joblib')
-        scaler = joblib.load('../ml/scaler.joblib')
-        label_encoder = joblib.load('../ml/label_encoder.joblib')
-            
+try:
+    # Load ML models at startup
+    ml_model = joblib.load('../ml/exoplanet_model_best.joblib')
+    scaler = joblib.load('../ml/scaler.joblib')
+    label_encoder = joblib.load('../ml/label_encoder.joblib')
+        
         # Load feature names
         feature_names = [
             'koi_period', 'koi_duration', 'koi_depth', 'koi_prad', 'koi_teq', 

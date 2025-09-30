@@ -54,8 +54,7 @@ export class MockMLService {
         'CONFIRMED': prediction === 'CONFIRMED' ? confidence : (1 - confidence) / 2,
         'CANDIDATE': prediction === 'CANDIDATE' ? confidence : (1 - confidence) / 2,
         'FALSE POSITIVE': prediction === 'FALSE POSITIVE' ? confidence : (1 - confidence) / 2
-      },
-      status: 'mock_prediction'
+      }
     };
   }
 

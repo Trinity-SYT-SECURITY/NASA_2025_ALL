@@ -23,7 +23,7 @@ const getApiBaseUrl = () => {
   // 檢查是否在開發環境
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:8000';
+      return 'http://localhost:8000'; // 本地開發使用本地後端
     }
 
     // 檢查是否在Vercel環境 - 使用ngrok後端
@@ -703,20 +703,13 @@ function App() {
     try {
       let response;
 
-      // 檢查是否使用內建ML服務
-      if (API_BASE_URL === null) {
-        console.log('🔬 Using built-in ML prediction service');
-        response = await MockMLService.predict(params);
-      } else {
-      // 嘗試使用真實API，如果失敗則使用模擬服務
+      // 嘗試使用真實API
       try {
-        const apiResponse = await axios.post(`${API_BASE_URL}/predict`, params);
-        response = apiResponse.data; // API返回的是data屬性中的物件
+        response = await axios.post(`${API_BASE_URL}/predict`, params);
         console.log('✅ Using real ML API');
       } catch (apiError) {
         console.log('⚠️ API not available, using mock ML service');
         response = await MockMLService.predict(params);
-      }
       }
 
       setPrediction(response);
