@@ -27,10 +27,10 @@ const detectBackendType = async () => {
     }
   }
 
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    const envUrl = import.meta.env.VITE_API_URL;
+  if (typeof process !== 'undefined' && process.env) {
+    const envUrl = process.env.REACT_APP_API_URL || process.env.VITE_API_URL;
     if (envUrl) {
-      console.log(`🔧 Using API URL from Vite env: ${envUrl}`);
+      console.log(`🔧 Using API URL from environment: ${envUrl}`);
       return envUrl;
     }
   }
@@ -71,9 +71,7 @@ const getApiBaseUrl = () => {
     if (process.env.VITE_API_URL) return process.env.VITE_API_URL;
   }
 
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  }
+  // Already handled by process.env above
 
   // Default: use detected backend or ngrok as fallback
   return 'https://test-backend-2-ikqg.onrender.com';

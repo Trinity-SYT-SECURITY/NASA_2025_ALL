@@ -7,9 +7,6 @@ const getApiBaseUrl = () => {
   if (typeof process !== 'undefined' && process.env) {
     if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
   }
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  }
 
   // 默認使用 Render 後端
   return 'https://test-backend-2-ikqg.onrender.com';
