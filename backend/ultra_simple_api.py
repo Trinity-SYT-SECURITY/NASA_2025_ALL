@@ -11,7 +11,13 @@ import random
 import os
 
 # Create app without automatic docs generation issues
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(
+    title="NASA Exoplanet API",
+    description="ML-powered exoplanet prediction API",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,7 +31,23 @@ app.add_middleware(
 try:
     import os
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    ml_dir = os.path.join(current_dir, '..', 'ml')
+    # 尝试多个可能的路径（现在 ultra_simple_api.py 在根目录）
+    possible_ml_dirs = [
+        os.path.join(current_dir, 'ml'),        # Docker: /app/ml/
+        os.path.join('/app', 'ml'),             # 绝对 Docker 路径
+        os.path.join(current_dir, '..', 'ml'),  # 备用路径
+    ]
+
+    ml_dir = None
+    for test_dir in possible_ml_dirs:
+        model_path = os.path.join(test_dir, 'exoplanet_model_best.joblib')
+        if os.path.exists(model_path):
+            ml_dir = test_dir
+            print(f"✅ Found ML models in: {ml_dir}")
+            break
+
+    if ml_dir is None:
+        raise FileNotFoundError("Could not find ML models directory. Tried: " + str(possible_ml_dirs))
 
     ml_model = joblib.load(os.path.join(ml_dir, 'exoplanet_model_best.joblib'))
     scaler = joblib.load(os.path.join(ml_dir, 'scaler.joblib'))
@@ -208,7 +230,19 @@ async def predict(data: dict):
             "status": "ml_prediction"
         }
     except Exception as e:
-        return {"error": str(e), "status": "error"}
+        print(f"❌ 預測錯誤: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "error": str(e),
+            "status": "error",
+            "debug_info": {
+                "models_loaded": models_loaded,
+                "model_type": type(ml_model).__name__ if ml_model else "None",
+                "scaler_type": type(scaler).__name__ if scaler else "None",
+                "encoder_type": type(label_encoder).__name__ if label_encoder else "None"
+            }
+        }
 
 @app.get("/exoplanets")
 async def exoplanets():
@@ -296,6 +330,12 @@ async def test_ml():
             "ml_loaded": models_loaded,
             "fallback_mode": "demo"
         }
+
+# For Render deployment
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 # For Vercel deployment, the app will be served by the serverless function
 # No need to run uvicorn manually

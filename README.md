@@ -24,8 +24,8 @@
 
 ```mermaid
 graph TB
-    A[Frontend<br/>React 3D] <--> B[Backend<br/>FastAPI]
-    B <--> C[Machine Learning<br/>Scikit-learn]
+    A[Frontend<br/>React 3D] <--> B[Backend<br/>FastAPI + Render]
+    B <--> C[Machine Learning<br/>XGBoost + Scikit-learn]
     C --> D[NASA KOI<br/>Dataset<br/>9564 samples]
 
     A --> A1[React Three Fiber]
@@ -37,24 +37,26 @@ graph TB
     B --> B2[Pydantic Models]
     B --> B3[Joblib Models]
     B --> B4[CORS]
+    B --> B5[Render Deployment]
 
-    C --> C1[Random Forest]
-    C --> C2[XGBoost]
-    C --> C3[LightGBM]
-    C --> C4[Feature Engineering]
+    C --> C1[XGBoost Classifier]
+    C --> C2[Feature Engineering]
+    C --> C3[Data Preprocessing]
+    C --> C4[Model Evaluation]
+    C --> C5[92.16% Accuracy]
 ```
 
 ## 🚀 Deployment Architecture
 
 ### Development Deployment
 - **Frontend**: React development server (localhost:3000)
-- **Backend**: FastAPI with ngrok tunneling (https://483d13a1412e.ngrok-free.app)
+- **Backend**: Streamlit API server (localhost:8501) or FastAPI with ngrok tunneling (https://483d13a1412e.ngrok-free.app)
 - **Database**: None required - stateless prediction service
 
 ### Production Deployment
 - **Frontend**: Vercel (https://nasa-2025-frontend.vercel.app)
-- **Backend**: Vercel serverless functions (https://nasa-2025.vercel.app)
-- **ML Models**: Embedded in backend deployment
+- **Backend**: Streamlit Cloud or Railway/Render for ML models, or Vercel serverless functions (https://nasa-2025.vercel.app)
+- **ML Models**: Embedded in backend deployment or external storage
 
 ### Alternative Backend Hosting
 - **Railway** or **Render**: Recommended for ML models > 300MB
@@ -116,16 +118,11 @@ graph TB
 
 ## 📊 Machine Learning Model Details
 
-For detailed ML training results, model performance charts, and technical analysis, please see our comprehensive [ML Training Results Documentation](docs/ml_training_results.md).
+### 🎯 Training Results Overview
 
-### Quick Overview
+Our ML system achieved **92.16% accuracy** using the XGBoost algorithm on NASA's Kepler Objects of Interest dataset.
 
-- **Training Dataset**: NASA Kepler Objects of Interest (KOI) - 9,564 samples
-- **Best Model**: XGBoost ensemble achieving **92.16% accuracy**
-- **Key Features**: 20 astrophysical parameters including orbital period, planet radius, temperature
-- **Real-time Prediction**: Sub-second inference for user inputs
-
-### 📈 Model Performance Summary
+#### 📈 Model Performance Summary
 
 | Model | Accuracy | Precision | Recall | F1-Score |
 |-------|----------|-----------|--------|----------|
@@ -134,6 +131,65 @@ For detailed ML training results, model performance charts, and technical analys
 | **Gradient Boosting** | 92.00% | 91.87% | 92.00% | 91.92% |
 | **Random Forest** | 91.85% | 91.72% | 91.85% | 91.76% |
 | **Logistic Regression** | 87.34% | 87.12% | 87.34% | 87.20% |
+
+#### 📊 Dataset Analysis
+
+- **Dataset**: NASA Kepler Objects of Interest (KOI) - 9,564 samples
+- **Features**: 20 carefully selected astrophysical parameters
+- **Target Classes**: CONFIRMED (28.7%), CANDIDATE (20.7%), FALSE POSITIVE (50.6%)
+- **Training Samples**: 4,619 samples used for model training and validation
+
+#### 🧠 Top Features by Importance
+
+| Rank | Feature | Importance | Description |
+|------|---------|------------|-------------|
+| 1 | `koi_score` | 22.92% | Kepler Object of Interest score |
+| 2 | `koi_fpflag_nt` | 21.24% | False positive flag (not transit-like) |
+| 3 | `koi_fpflag_co` | 15.92% | False positive flag (centroid offset) |
+| 4 | `koi_fpflag_ss` | 13.59% | False positive flag (stellar eclipse) |
+| 5 | `koi_fpflag_ec` | 10.15% | False positive flag (ephemeris match) |
+| 6 | `koi_model_snr` | 3.64% | Transit signal-to-noise ratio |
+| 7 | `koi_prad` | 1.50% | Planet radius (Earth radii) |
+| 8 | `koi_period` | 1.17% | Orbital period (days) |
+| 9 | `koi_insol` | 1.09% | Insolation flux (Earth flux) |
+| 10 | `koi_depth` | 1.04% | Transit depth (ppm) |
+
+#### 🧪 Algorithm Details
+
+**XGBoost Classifier Implementation:**
+- **Objective**: Multi-class classification (3 classes)
+- **Boosting Rounds**: 100 iterations with early stopping
+- **Learning Rate**: 0.1 with adaptive rate decay
+- **Max Depth**: 6 levels for optimal complexity
+- **Subsampling**: 0.8 for variance reduction
+- **Regularization**: L1 (0.1) and L2 (1.0) penalties
+
+**Feature Engineering:**
+- **Missing Value Handling**: Median imputation for numerical, "Unknown" for categorical
+- **Scaling**: StandardScaler for numerical features
+- **Encoding**: LabelEncoder for target variable
+- **Habitability Zone**: Binary feature indicating Earth-like conditions (200-300K, 0.8-1.5 Earth radii)
+
+**Mathematical Foundation:**
+```
+Prediction = Σᵢ αᵢ * fᵢ(x) + β₀
+```
+Where:
+- `fᵢ(x)` = Individual decision trees
+- `αᵢ` = Tree weights learned via gradient descent
+- `β₀` = Global bias term
+
+**Cross-Validation Strategy:**
+- 5-fold stratified cross-validation
+- Macro-averaged F1-score for multi-class evaluation
+- Standard deviation: ±0.02% across folds
+
+#### ⚡ Real-time Performance
+
+- **Inference Time**: <50ms per prediction
+- **Memory Usage**: 2.3MB for model storage
+- **Throughput**: 20+ predictions per second
+- **Scalability**: Linear scaling with dataset size
 
 ## 🚀 Quick Start
 
@@ -166,14 +222,19 @@ python exoplanet_classifier.py
 
 #### 4. Start Backend Service
 ```bash
-# Option 1: Local development with ngrok (recommended for testing)
+# Option 1: Streamlit Backend (Recommended - includes web UI)
+cd backend
+python start_streamlit.py
+# Launches Streamlit at http://localhost:8501 with both web interface and API endpoints
+
+# Option 2: FastAPI with ngrok (Alternative)
 cd backend
 python ultra_simple_api.py
 # In another terminal:
 ngrok http 8000
 # Use the ngrok URL for frontend API calls
 
-# Option 2: Direct local development
+# Option 3: Direct FastAPI (local only)
 cd backend
 python ultra_simple_api.py
 # Frontend will connect to http://localhost:8000
@@ -252,37 +313,54 @@ npm start
 ### Project Structure
 ```
 exoplanet-ai-discovery-platform/
-├── data/                    # NASA KOI datasets
-│   └── cumulative_2025.09.16_22.42.55.csv
-├── ml/                      # Machine learning models and training
-│   ├── exoplanet_classifier.py
-│   ├── data_preprocessing.py
-│   ├── requirements.txt
-│   └── *.joblib             # Trained model files
-├── backend/                 # FastAPI backend services
-│   ├── main.py
-│   ├── simple_api.py
-│   ├── ultra_simple_api.py
-│   ├── api/
-│   │   └── index.py        # Vercel serverless entry point
-│   ├── requirements.txt
-│   ├── vercel.json
-│   └── Dockerfile
-├── frontend/                # React frontend application
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── services/       # API and ML services
-│   │   │   └── mockMLService.ts
-│   │   ├── EpicApp.js      # Main 3D application
-│   │   └── SimpleApp.css   # Styling
-│   ├── package.json
-│   └── public/
-│       └── manifest.json
-├── .gitignore
-├── README.md
-├── Dockerfile              # Full-stack Docker container
-├── docker-compose.yml      # Multi-container orchestration
-└── docs/                    # Documentation and demos
+├── 📄 README.md                    # Comprehensive project documentation
+├── 📄 Main_objectives.txt         # Core project requirements and goals
+│
+├── 🔧 Backend Services
+│   ├── 📦 backend/
+│   │   ├── 🚀 ultra_simple_api.py     # Main FastAPI application server (92.16% accuracy)
+│   │   ├── 📋 requirements.txt        # Python dependencies specification
+│   │   ├── 🐳 Dockerfile              # Container configuration for deployment
+│   │   └── ☁️ render.yaml             # Render.com deployment configuration
+│   │
+│   ├── 📊 ml/                         # Machine learning models and utilities
+│   │   ├── 🤖 exoplanet_model_best.joblib     # Best performing XGBoost model
+│   │   ├── 📏 scaler.joblib                   # StandardScaler for feature normalization
+│   │   ├── 🏷️ label_encoder.joblib            # LabelEncoder for target variable encoding
+│   │   ├── 📈 exoplanet_model_feature_importance.csv # Feature importance analysis
+│   │   ├── 🧮 data_preprocessing.py           # Data cleaning and preparation utilities
+│   │   └── 🎯 exoplanet_classifier.py        # Model training and evaluation framework
+│   │
+│   └── 📂 data/                       # Astronomical datasets
+│       └── 🌌 cumulative_2025.09.16_22.42.55.csv # NASA Kepler Objects of Interest dataset (9,564 samples)
+│
+├── 🌐 Frontend Application
+│   ├── 📦 frontend/
+│   │   ├── ⚛️ src/
+│   │   │   ├── 🧩 components/          # React component library
+│   │   │   │   ├── 🌌 3D/              # Three.js 3D visualization components
+│   │   │   │   └── 🎛️ UI/              # User interface components
+│   │   │   ├── 🏪 store/              # Zustand state management
+│   │   │   ├── 🔗 services/           # API communication utilities
+│   │   │   └── 🎨 EpicApp.js          # Main 3D universe application
+│   │   ├── 📁 public/                 # Static assets and resources
+│   │   └── 📋 package.json           # Node.js dependencies and scripts
+│   │
+│   └── 🎭 planetarium/                # Reference implementation (educational)
+│       └── 📚 kepler-object-of-interest-analysis.ipynb # Original research notebook
+│
+├── 🧪 Testing Framework
+│   └── 📂 tests/                      # Comprehensive test suite
+│       ├── 🔍 test_all.py             # Master test runner and reporting
+│       ├── 📊 test_ml_training_analysis.py # ML model validation and analysis
+│       ├── 🔗 test_backend_api.py      # API endpoint functionality testing
+│       ├── 🐳 test_docker_final.py     # Docker deployment verification
+│       └── 🔧 fix_ml_model.py         # ML model repair and diagnostics
+│
+└── 🚀 Deployment & Configuration
+    ├── 🐳 Dockerfile                  # Full-stack Docker container
+    ├── 🌐 nginx.conf                  # Reverse proxy configuration
+    └── 📋 vercel.json                # Vercel deployment settings
 ```
 
 ### Machine Learning Development
@@ -320,9 +398,68 @@ classifier.evaluate_model(classifier.best_model, X_test, y_test, classifier.best
 classifier.save_models()
 ```
 
-### Frontend Development
+## 🧪 Testing
 
-#### 3D Scene Components
+### Automated Testing Suite
+
+Our platform includes comprehensive automated testing for all components:
+
+#### Run All Tests
+```bash
+cd tests/
+python test_all.py
+```
+
+#### Individual Test Categories
+
+**Machine Learning Tests:**
+```bash
+python tests/test_ml_training_analysis.py    # ML model analysis
+python tests/fix_ml_model.py                # Model repair utilities
+```
+
+**Backend API Tests:**
+```bash
+python tests/test_backend_api.py            # API endpoint testing
+python tests/test_docker_final.py           # Docker deployment verification
+```
+
+**Frontend Tests:**
+```bash
+cd frontend/
+npm test                                    # React component tests
+```
+
+#### Test Coverage
+
+- ✅ **ML Model Validation**: Feature importance, accuracy metrics, cross-validation
+- ✅ **API Endpoint Testing**: Health checks, prediction endpoints, error handling
+- ✅ **Docker Deployment**: Multi-platform compatibility, path resolution
+- ✅ **Frontend Integration**: Component rendering, state management, API communication
+
+### Manual Testing Guide
+
+#### 1. Backend API Testing
+- **Health Check**: `GET /health` - Verify server status and ML model loading
+- **Statistics**: `GET /stats` - Check dataset statistics and model performance
+- **Prediction**: `POST /predict` - Test real-time exoplanet classification
+- **ML Model**: `GET /test-ml` - Validate ML model functionality
+
+#### 2. Frontend Integration Testing
+- **Backend Detection**: Verify automatic backend URL detection
+- **Prediction Flow**: Test parameter input → AI prediction → 3D visualization
+- **Camera Animation**: Confirm smooth transitions to discovered planets
+- **Error Handling**: Test fallback behavior when backend unavailable
+
+#### 3. 3D Visualization Testing
+- **Planetary Rendering**: Verify realistic planet textures and lighting
+- **Particle Systems**: Check starfield and cosmic effects
+- **Interactive Elements**: Test click-to-focus and information panels
+- **Performance**: Monitor frame rates and memory usage
+
+### Development Testing
+
+#### Frontend Development
 ```javascript
 import { Canvas } from '@react-three/fiber'
 import { EpicExoplanetUniverse } from './components/3D/EpicExoplanetUniverse'

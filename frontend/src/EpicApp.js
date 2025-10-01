@@ -9,6 +9,61 @@ import './SimpleApp.css';
 // 在文件頂部添加類型斷言輔助函數
 const sx = (styles) => styles;
 
+// Backend detection and URL management
+const detectBackendType = async () => {
+  // Priority: Render > ngrok > Local FastAPI > Vercel > Mock
+  const backends = [
+    { name: 'render', url: 'https://test-backend-2-ikqg.onrender.com', testUrl: '/health' },
+    { name: 'ngrok', url: 'https://483d13a1412e.ngrok-free.app', testUrl: '/?endpoint=health' },
+    { name: 'local_fastapi', url: 'http://localhost:8000', testUrl: '/health' },
+  ];
+
+  // Try to get from environment variables first
+  if (typeof process !== 'undefined' && process.env) {
+    const envUrl = process.env.REACT_APP_API_URL || process.env.VITE_API_URL;
+    if (envUrl) {
+      console.log(`🔧 Using API URL from environment: ${envUrl}`);
+      return envUrl;
+    }
+  }
+
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    const envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl) {
+      console.log(`🔧 Using API URL from Vite env: ${envUrl}`);
+      return envUrl;
+    }
+  }
+
+  for (const backend of backends) {
+    try {
+      const response = await axios.get(`${backend.url}${backend.testUrl}`, {
+        timeout: 3000,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.status === 200 && response.data) {
+        // Check if it's a real backend (not just a web server)
+        const isValidBackend = response.data.status ||
+                              response.data.models_loaded !== undefined ||
+                              response.data.backend_type ||
+                              response.data.total_exoplanets;
+
+        if (isValidBackend) {
+          console.log(`✅ Backend detected: ${backend.name} at ${backend.url}`);
+          console.log(`   Backend info:`, response.data);
+          return backend.url;
+        }
+      }
+    } catch (error) {
+      console.log(`❌ ${backend.name} backend not available:`, error.message);
+    }
+  }
+
+  console.log('⚠️ No backends available, using mock service');
+  return null;
+};
+
 const getApiBaseUrl = () => {
   // Try multiple environment variable sources
   if (typeof process !== 'undefined' && process.env) {
@@ -20,40 +75,52 @@ const getApiBaseUrl = () => {
     if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   }
 
-  // Check if in development environment
-  if (typeof window !== 'undefined') {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:8000'; // Local development uses local backend
-    }
-
-    // Check if in Vercel environment - use ngrok backend
-    if (window.location.hostname.endsWith('.vercel.app')) {
-      return 'https://483d13a1412e.ngrok-free.app';
-    }
-  }
-
-  // Default: use ngrok backend
-  return 'https://483d13a1412e.ngrok-free.app';
+  // Default: use detected backend or ngrok as fallback
+  return 'https://test-backend-2-ikqg.onrender.com';
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
 console.log('API Base URL:', API_BASE_URL);
 
-// Test ML model loading
-const testMLModel = async () => {
+// Test backend connectivity and ML model loading
+const testBackend = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/test-ml`);
-    console.log('🔬 ML Model Test Result:', response.data);
-    return response.data;
+    // First detect which backend is available
+    const backendUrl = await detectBackendType();
+    if (!backendUrl) {
+      console.log('⚠️ No backend detected, using mock service');
+      return { success: false, fallback_mode: 'mock', backend_url: null };
+    }
+
+    // Test the detected backend
+    const response = await axios.get(`${backendUrl}/test-ml`, { timeout: 3000 });
+    console.log('🔬 Backend Test Result:', response.data);
+
+    // Check if it's a real ML backend or demo mode
+    const isMLBackend = response.data.models_loaded !== false && response.data.status !== 'streamlit_unavailable';
+
+    return {
+      success: true,
+      backend_url: backendUrl,
+      ml_available: isMLBackend,
+      backend_info: response.data
+    };
   } catch (error) {
-    console.log('⚠️ ML Model Test Failed:', error.message);
-    return { success: false, fallback_mode: 'demo' };
+    console.log('⚠️ Backend Test Failed:', error.message);
+    return { success: false, fallback_mode: 'mock', backend_url: null };
   }
 };
 
-// Initialize ML model test
-testMLModel();
+// Initialize backend detection
+let currentBackendUrl = null;
+let mlAvailable = false;
+
+testBackend().then(result => {
+  currentBackendUrl = result.backend_url;
+  mlAvailable = result.ml_available;
+  console.log('🚀 Backend initialization complete:', result);
+});
 
 // 安全的 material 屬性設置函數
 const setMaterialProperty = (material, property, value) => {
@@ -702,12 +769,17 @@ function App() {
     try {
       let response;
 
-      // Try to use real ML API first
-      try {
-        response = await axios.post(`${API_BASE_URL}/predict`, params);
-        console.log('✅ Using real ML API');
-      } catch (apiError) {
-        console.log('⚠️ Real API failed, using mock ML service');
+      // Use detected backend URL or fallback to mock service
+      if (currentBackendUrl && mlAvailable) {
+        try {
+          response = await axios.post(`${currentBackendUrl}/predict`, params, { timeout: 5000 });
+          console.log(`✅ Using backend: ${currentBackendUrl}`);
+        } catch (apiError) {
+          console.log(`⚠️ Backend failed, using mock ML service: ${apiError.message}`);
+          response = await MockMLService.predict(params);
+        }
+      } else {
+        console.log('ℹ️ Using mock ML service (no backend detected)');
         response = await MockMLService.predict(params);
       }
 

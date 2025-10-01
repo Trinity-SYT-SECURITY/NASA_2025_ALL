@@ -1,7 +1,21 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+// 從環境變數或默認值獲取後端 URL
+const getApiBaseUrl = () => {
+  // 嘗試從環境變數獲取
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
+  }
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  }
+
+  // 默認使用 Render 後端
+  return 'https://test-backend-2-ikqg.onrender.com';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface ExoplanetData {
   kepoi_name: string;
