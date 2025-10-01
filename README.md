@@ -1,5 +1,6 @@
 # 🌌 Exoplanet AI Discovery Platform
 
+
 **An Epic AI-Powered 3D Exoplanet Discovery Platform**
 
 [![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
@@ -7,6 +8,16 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.9+-yellow.svg)](https://python.org/)
 [![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.3.0-orange.svg)](https://scikit-learn.org/)
+
+
+## Competition Challenge Description
+
+[A World Away: Hunting for Exoplanets with AI](https://www.spaceappschallenge.org/2025/challenges/a-world-away-hunting-for-exoplanets-with-ai/?tab=details)
+
+### OBJECTIVES
+
+Your challenge is to create an artificial intelligence/machine learning model that is trained on one or more of NASA’s open-source exoplanet datasets, and not only analyzes data to identify new exoplanets, but includes a web interface to facilitate user interaction. A number of exoplanet datasets from NASA’s Kepler, K2, and TESS missions are available (see Resources tab). Feel free to utilize any open-source programming language, machine learning libraries, or software solutions that you think would fit into this project well. Think about the different ways that each data variable (e.g., orbital period, transit duration, planetary radius, etc.) might impact the final decision to classify the data point as a confirmed exoplanet, planetary candidate, or false positive. Processing, removing, or incorporating specific data in different ways could mean the difference between higher-accuracy and lower-accuracy models. Think about how scientists and researchers may interact with the project you create. Will you allow users to upload new data or manually enter data via the user interface? Will you utilize the data users provide to update your model? The choices are endless!
+
 
 ## 🚀 Project Overview
 
@@ -24,26 +35,63 @@
 
 ```mermaid
 graph TB
-    A[Frontend<br/>React 3D] <--> B[Backend<br/>FastAPI + Render]
-    B <--> C[Machine Learning<br/>XGBoost + Scikit-learn]
-    C --> D[NASA KOI<br/>Dataset<br/>9564 samples]
+    %% User Layer
+    U[User Interface<br/>Interactive 3D Experience] --> F
 
-    A --> A1[React Three Fiber]
-    A --> A2[Three.js]
-    A --> A3[Recoil State]
-    A --> A4[Axios HTTP]
+    %% Frontend Layer
+    subgraph "Frontend (React)"
+        F[React Application]
+        F --> R3F[React Three Fiber<br/>3D Rendering Engine]
+        F --> TJS[Three.js<br/>WebGL Graphics]
+        F --> REC[Recoil<br/>State Management]
+        F --> AXI[Axios<br/>HTTP Client]
+        F --> UI[Material-UI<br/>Component Library]
+    end
 
-    B --> B1[REST API]
-    B --> B2[Pydantic Models]
-    B --> B3[Joblib Models]
-    B --> B4[CORS]
-    B --> B5[Render Deployment]
+    %% API Communication
+    F <--> API[REST API Layer]
 
-    C --> C1[XGBoost Classifier]
-    C --> C2[Feature Engineering]
-    C --> C3[Data Preprocessing]
-    C --> C4[Model Evaluation]
-    C --> C5[92.16% Accuracy]
+    %% Backend Layer
+    subgraph "Backend (FastAPI)"
+        API --> FAS[FastAPI Server<br/>REST Endpoints]
+        API --> PYM[Pydantic Models<br/>Data Validation]
+        API --> JOB[Joblib Models<br/>ML Model Loading]
+        API --> COR[CORS Middleware<br/>Cross-Origin Support]
+        API --> REN[Render Deployment<br/>Cloud Hosting]
+
+        %% ML Processing
+        FAS --> MLP[ML Processing Pipeline]
+        MLP --> XGB[XGBoost<br/>Classification Model]
+        MLP --> FE[Feature Engineering<br/>Data Transformation]
+        MLP --> PRE[Data Preprocessing<br/>Cleaning & Scaling]
+        MLP --> EVAL[Model Evaluation<br/>Performance Metrics]
+    end
+
+    %% Data Layer
+    PRE --> DATA[NASA KOI Dataset<br/>Astronomical Data Source]
+    FE --> DATA
+    XGB --> DATA
+
+    %% 3D Visualization Pipeline
+    R3F --> SCE[3D Scene Graph<br/>Planetary Objects]
+    SCE --> PHY[Physics Simulation<br/>Orbital Mechanics]
+    SCE --> REN[Rendering Pipeline<br/>Shaders & Materials]
+    SCE --> INT[Interactive Controls<br/>Camera & Input]
+
+    %% State Flow
+    UI --> REC
+    REC --> F
+    AXI --> API
+
+    %% Styling
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef backend fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef data fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef ml fill:#fff3e0,stroke:#e65100,stroke-width:2px
+
+    class F,UI,REC,AXI,R3F,TJS,SCE,PHY,REN,INT frontend
+    class FAS,PYM,JOB,COR,REN,API,MLP backend
+    class XGB,FE,PRE,EVAL,DATA ml
 ```
 
 ## 🚀 Deployment Architecture
@@ -101,7 +149,7 @@ graph TB
 ### 🤖 AI Machine Learning System
 - **Multi-Model Ensemble**: 5 different algorithms for robust predictions
 - **Feature Engineering**: Automated missing value handling, categorical encoding, habitability zone creation
-- **Model Evaluation**: 92.16% accuracy with classification reports and feature importance analysis
+- **Model Evaluation**: High-accuracy classification with comprehensive performance metrics
 - **Real-time Prediction**: Instant classification based on user-input planetary parameters
 
 ### 🌌 3D Cosmic Visualization
@@ -136,7 +184,7 @@ Our ML system achieved **92.16% accuracy** using the XGBoost algorithm on NASA's
 
 - **Dataset**: NASA Kepler Objects of Interest (KOI) - 9,564 samples
 - **Features**: 20 carefully selected astrophysical parameters
-- **Target Classes**: CONFIRMED (28.7%), CANDIDATE (20.7%), FALSE POSITIVE (50.6%)
+- **Target Classes**: CONFIRMED, CANDIDATE, FALSE POSITIVE (3-class classification)
 - **Training Samples**: 4,619 samples used for model training and validation
 
 #### 🧠 Top Features by Importance
@@ -318,7 +366,7 @@ exoplanet-ai-discovery-platform/
 │
 ├── 🔧 Backend Services
 │   ├── 📦 backend/
-│   │   ├── 🚀 ultra_simple_api.py     # Main FastAPI application server (92.16% accuracy)
+│   │   ├── 🚀 ultra_simple_api.py     # Main FastAPI application server
 │   │   ├── 📋 requirements.txt        # Python dependencies specification
 │   │   ├── 🐳 Dockerfile              # Container configuration for deployment
 │   │   └── ☁️ render.yaml             # Render.com deployment configuration
@@ -332,7 +380,7 @@ exoplanet-ai-discovery-platform/
 │   │   └── 🎯 exoplanet_classifier.py        # Model training and evaluation framework
 │   │
 │   └── 📂 data/                       # Astronomical datasets
-│       └── 🌌 cumulative_2025.09.16_22.42.55.csv # NASA Kepler Objects of Interest dataset (9,564 samples)
+│       └── 🌌 cumulative_2025.09.16_22.42.55.csv # NASA Kepler Objects of Interest dataset
 │
 ├── 🌐 Frontend Application
 │   ├── 📦 frontend/
@@ -567,11 +615,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Scikit-learn**: Powerful machine learning toolkit
 - **FastAPI**: High-performance Python web framework
 
-## 📞 Contact Information
+## DATA
 
-- **Project Maintainer**: [Your Name]
-- **Email**: your.email@example.com
-- **GitHub Issues**: [Submit Issues](https://github.com/your-repo/issues)
++ [Kepler Objects of Interest (KOI)](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative): This dataset is a comprehensive list of all confirmed exoplanets, planetary candidates, and false positives determined on all the transits captured by Kepler. Utilizing the variables in this labeled dataset could make for a solid method of performing supervised learning from different variables in the dataset. See column “Disposition Using Kepler Data” for classification.
 
 ---
 
