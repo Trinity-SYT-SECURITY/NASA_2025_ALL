@@ -45,7 +45,7 @@ def load_training_data():
                 print("Warning: Could not load training data, will use generic name generation")
                 training_data = pd.DataFrame()
             else:
-                # 確保有必要的列
+                # Ensure required columns exist
                 required_cols = ['kepler_name', 'kepoi_name', 'koi_period', 'koi_prad', 'koi_teq']
                 missing_cols = [col for col in required_cols if col not in training_data.columns]
                 if missing_cols:
@@ -87,25 +87,41 @@ def find_similar_planet(input_features, input_data):
             print("Warning: No valid Kepler names found in training data")
             return None, 0.0
 
+        print(f"Found {len(valid_planets)} planets with valid Kepler names")
+
         # Extract features
         train_features = valid_planets[available_columns].fillna(0).values
 
-        # Prepare input features (use only available columns)
-        input_vector = np.array([input_features[available_columns.index(col)] if col in available_columns else 0
-                                for col in feature_columns if col in available_columns]).reshape(1, -1)
+        # Prepare input features - use input_data dict directly
+        input_vector = []
+        for col in available_columns:
+            if col in input_data:
+                input_vector.append(float(input_data[col]))
+            else:
+                input_vector.append(0.0)
+        
+        input_vector = np.array(input_vector).reshape(1, -1)
+
+        # Normalize features for better similarity matching
+        from sklearn.preprocessing import StandardScaler
+        scaler_sim = StandardScaler()
+        train_features_scaled = scaler_sim.fit_transform(train_features)
+        input_vector_scaled = scaler_sim.transform(input_vector)
 
         # Calculate cosine similarity
-        similarities = cosine_similarity(input_vector, train_features)[0]
+        similarities = cosine_similarity(input_vector_scaled, train_features_scaled)[0]
 
-        # Find most similar planet (similarity threshold set to 0.7, more lenient)
+        # Find most similar planet (lower threshold for better matching)
         max_sim_idx = np.argmax(similarities)
         max_similarity = similarities[max_sim_idx]
 
-        print(f"Max similarity score: {max_similarity:.3f} (threshold: 0.7)")
+        print(f"Max similarity score: {max_similarity:.3f} (threshold: 0.3)")
 
-        if max_similarity > 0.7:  # Similarity threshold
+        # Lower threshold to 0.3 for better matching
+        if max_similarity > 0.3:  # Much lower similarity threshold
             similar_planet = valid_planets.iloc[max_sim_idx]
-            print(f"Found similar planet: {similar_planet['kepler_name']} (similarity: {max_similarity:.3f})")
+            planet_name = similar_planet['kepler_name']
+            print(f"Found similar planet: {planet_name} (similarity: {max_similarity:.3f})")
             return similar_planet, max_similarity
 
         print(f"No sufficiently similar planet found, max similarity: {max_similarity:.3f}")
@@ -159,6 +175,11 @@ try:
     ml_model = joblib.load(os.path.join(ml_dir, 'exoplanet_model_best.joblib'))
     scaler = joblib.load(os.path.join(ml_dir, 'scaler.joblib'))
     label_encoder = joblib.load(os.path.join(ml_dir, 'label_encoder.joblib'))
+    
+    # Fix XGBoost compatibility issue
+    if hasattr(ml_model, 'use_label_encoder'):
+        ml_model.use_label_encoder = False
+    
     models_loaded = True
     print("ML models loaded successfully from:", ml_dir)
 except Exception as e:
@@ -339,6 +360,12 @@ async def predict(data: dict):
             planet_name = generate_planet_name(data, pred_str)
             match_status = "generated_name"
             print(f"Generated new name: {planet_name} (max similarity: {similarity_score:.3f})")
+            
+        # Ensure we have valid values
+        if planet_name is None or planet_name == "":
+            planet_name = f"AI Predicted {planet_type}"
+        if similarity_score is None:
+            similarity_score = 0.0
 
         return {
             "prediction": pred_str,
