@@ -9,6 +9,113 @@ import joblib
 import json
 import random
 import os
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Global variable for training data
+training_data = None
+
+def load_training_data():
+    """Load training data for similarity matching"""
+    global training_data
+    if training_data is None:
+        try:
+            # Try multiple possible data file paths
+            possible_paths = [
+                os.path.join(os.path.dirname(__file__), '..', 'data', 'cumulative_2025.09.16_22.42.55.csv'),
+                os.path.join(os.path.dirname(__file__), 'data', 'cumulative_2025.09.16_22.42.55.csv'),
+                '/app/data/cumulative_2025.09.16_22.42.55.csv',
+                # Try from current directory upwards
+                os.path.join(os.getcwd(), 'data', 'cumulative_2025.09.16_22.42.55.csv'),
+                os.path.join(os.getcwd(), '..', 'data', 'cumulative_2025.09.16_22.42.55.csv')
+            ]
+
+            print("Attempting to load training data...")
+            for path in possible_paths:
+                print(f"   Checking path: {path}")
+                if os.path.exists(path):
+                    training_data = pd.read_csv(path)
+                    print(f"Training data loaded successfully: {len(training_data)} rows")
+                    print(f"   Columns: {len(training_data.columns)}")
+                    print(f"   Contains kepler_name column: {'kepler_name' in training_data.columns}")
+                    break
+
+            if training_data is None or training_data.empty:
+                print("Warning: Could not load training data, will use generic name generation")
+                training_data = pd.DataFrame()
+            else:
+                # 確保有必要的列
+                required_cols = ['kepler_name', 'kepoi_name', 'koi_period', 'koi_prad', 'koi_teq']
+                missing_cols = [col for col in required_cols if col not in training_data.columns]
+                if missing_cols:
+                    print(f"Warning: Training data missing required columns: {missing_cols}")
+
+        except Exception as e:
+            print(f"Error loading training data: {e}")
+            import traceback
+            traceback.print_exc()
+            training_data = pd.DataFrame()
+
+    return training_data
+
+def find_similar_planet(input_features, input_data):
+    """Find the most similar planet in training data based on input features"""
+    if training_data is None or training_data.empty or len(training_data) == 0:
+        print("Warning: Training data not available for similarity matching")
+        return None, 0.0
+
+    try:
+        # Prepare training data features (same as prediction features)
+        feature_columns = [
+            'koi_period', 'koi_duration', 'koi_depth', 'koi_prad', 'koi_teq',
+            'koi_insol', 'koi_model_snr', 'koi_steff', 'koi_slogg', 'koi_srad',
+            'koi_smass', 'koi_kepmag', 'koi_fpflag_nt', 'koi_fpflag_ss',
+            'koi_fpflag_co', 'koi_fpflag_ec', 'ra', 'dec', 'koi_score'
+        ]
+
+        # Ensure all required columns exist
+        available_columns = [col for col in feature_columns if col in training_data.columns]
+        if len(available_columns) < 10:  # Need at least 10 features
+            print(f"Warning: Training data missing sufficient feature columns, found only {len(available_columns)}")
+            return None, 0.0
+
+        # Extract features for planets with valid Kepler names only
+        valid_planets = training_data[training_data['kepler_name'].notna() & (training_data['kepler_name'] != '')]
+
+        if len(valid_planets) == 0:
+            print("Warning: No valid Kepler names found in training data")
+            return None, 0.0
+
+        # Extract features
+        train_features = valid_planets[available_columns].fillna(0).values
+
+        # Prepare input features (use only available columns)
+        input_vector = np.array([input_features[available_columns.index(col)] if col in available_columns else 0
+                                for col in feature_columns if col in available_columns]).reshape(1, -1)
+
+        # Calculate cosine similarity
+        similarities = cosine_similarity(input_vector, train_features)[0]
+
+        # Find most similar planet (similarity threshold set to 0.7, more lenient)
+        max_sim_idx = np.argmax(similarities)
+        max_similarity = similarities[max_sim_idx]
+
+        print(f"Max similarity score: {max_similarity:.3f} (threshold: 0.7)")
+
+        if max_similarity > 0.7:  # Similarity threshold
+            similar_planet = valid_planets.iloc[max_sim_idx]
+            print(f"Found similar planet: {similar_planet['kepler_name']} (similarity: {max_similarity:.3f})")
+            return similar_planet, max_similarity
+
+        print(f"No sufficiently similar planet found, max similarity: {max_similarity:.3f}")
+        return None, max_similarity
+
+    except Exception as e:
+        print(f"Similarity matching failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return None, 0.0
 
 # Create app without automatic docs generation issues
 app = FastAPI(
@@ -43,7 +150,7 @@ try:
         model_path = os.path.join(test_dir, 'exoplanet_model_best.joblib')
         if os.path.exists(model_path):
             ml_dir = test_dir
-            print(f"✅ Found ML models in: {ml_dir}")
+            print(f"Found ML models in: {ml_dir}")
             break
 
     if ml_dir is None:
@@ -53,11 +160,11 @@ try:
     scaler = joblib.load(os.path.join(ml_dir, 'scaler.joblib'))
     label_encoder = joblib.load(os.path.join(ml_dir, 'label_encoder.joblib'))
     models_loaded = True
-    print("✅ ML models loaded successfully from:", ml_dir)
+    print("ML models loaded successfully from:", ml_dir)
 except Exception as e:
     ml_model = scaler = label_encoder = None
     models_loaded = False
-    print(f"⚠️ Running in demo mode - Error loading models: {e}")
+    print(f"Warning: Running in demo mode - Error loading models: {e}")
 
 def generate_planet_name(data: dict, prediction: str) -> str:
     """Generate a realistic Kepler planet name based on characteristics"""
@@ -160,8 +267,11 @@ async def predict(data: dict):
             "probabilities": {"CANDIDATE": 0.78, "CONFIRMED": 0.15, "FALSE POSITIVE": 0.07},
             "status": "demo_mode"
         }
-    
+
     try:
+        # Load training data for similarity matching
+        load_training_data()  # Load training data to global variable
+        print(f"Training data loaded: {len(training_data)} rows")
         # Prepare ML input
         features = [
             data.get('koi_period', 365.25),
@@ -216,8 +326,19 @@ async def predict(data: dict):
         elif temp < 7500: star_type = "F-dwarf"
         else: star_type = "A-dwarf"
         
-        # Generate realistic planet name based on characteristics
-        planet_name = generate_planet_name(data, pred_str)
+        # Try to find similar planet first, generate generic name if not found
+        similar_planet, similarity_score = find_similar_planet(features, data)
+
+        if similar_planet is not None and 'kepler_name' in similar_planet:
+            # Found highly similar real planet
+            planet_name = similar_planet['kepler_name'] if pd.notna(similar_planet['kepler_name']) else f"Kepler-{similar_planet['kepoi_name']}"
+            match_status = "matched_existing"
+            print(f"Found similar planet: {planet_name} (similarity: {similarity_score:.3f})")
+        else:
+            # No similar planet found, generate generic name
+            planet_name = generate_planet_name(data, pred_str)
+            match_status = "generated_name"
+            print(f"Generated new name: {planet_name} (max similarity: {similarity_score:.3f})")
 
         return {
             "prediction": pred_str,
@@ -227,10 +348,12 @@ async def predict(data: dict):
             "planet_type": planet_type,
             "planet_name": planet_name,
             "star_type": star_type,
+            "match_status": match_status,
+            "similarity_score": float(similarity_score),
             "status": "ml_prediction"
         }
     except Exception as e:
-        print(f"❌ 預測錯誤: {e}")
+        print(f"Prediction error: {e}")
         import traceback
         traceback.print_exc()
         return {
