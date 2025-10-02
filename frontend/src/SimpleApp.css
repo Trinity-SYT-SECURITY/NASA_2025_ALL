@@ -864,6 +864,59 @@
   gap: 15px;
 }
 
+/* Validation Error Styling */
+.validation-error {
+  background: rgba(255, 107, 53, 0.15);
+  border: 2px solid rgba(255, 107, 53, 0.4);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.error-icon {
+  font-size: 24px;
+  color: #ff6b35;
+}
+
+.error-content h4 {
+  color: #ff6b35;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+.error-message {
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.error-list {
+  margin: 10px 0;
+  padding-left: 20px;
+  color: #ffffff;
+}
+
+.error-list li {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.error-suggestion {
+  color: #00d4ff;
+  margin: 10px 0 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.error-suggestion strong {
+  color: #00ffff;
+}
+
 .result-card {
   display: flex;
   align-items: center;

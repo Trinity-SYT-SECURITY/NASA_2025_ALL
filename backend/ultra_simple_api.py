@@ -92,10 +92,12 @@ def find_similar_planet(input_features, input_data):
         # Extract features
         train_features = valid_planets[available_columns].fillna(0).values
 
-        # Prepare input features - use input_data dict directly
+        # Prepare input features - input_features is a list, input_data is a dict
         input_vector = []
-        for col in available_columns:
-            if col in input_data:
+        for i, col in enumerate(available_columns):
+            if i < len(input_features):
+                input_vector.append(float(input_features[i]))
+            elif col in input_data:
                 input_vector.append(float(input_data[col]))
             else:
                 input_vector.append(0.0)
@@ -296,6 +298,63 @@ async def stats():
 
 @app.post("/predict")
 async def predict(data: dict):
+    # Input validation - check for invalid parameters
+    required_params = ['koi_period', 'koi_prad', 'koi_teq', 'koi_steff']
+
+    # Check if all required parameters are provided
+    missing_params = [param for param in required_params if param not in data]
+    if missing_params:
+        return {
+            "error": f"Missing required parameters: {', '.join(missing_params)}",
+            "status": "invalid_input",
+            "valid_parameters": required_params
+        }
+
+    # Validate parameter ranges
+    validation_errors = []
+
+    if not isinstance(data.get('koi_period'), (int, float)) or data.get('koi_period', 0) <= 0:
+        validation_errors.append("koi_period must be a positive number (orbital period in days)")
+
+    if not isinstance(data.get('koi_prad'), (int, float)) or data.get('koi_prad', 0) <= 0:
+        validation_errors.append("koi_prad must be a positive number (planet radius in Earth radii)")
+
+    if not isinstance(data.get('koi_teq'), (int, float)) or data.get('koi_teq', 0) <= 0:
+        validation_errors.append("koi_teq must be a positive number (equilibrium temperature in Kelvin)")
+
+    if not isinstance(data.get('koi_steff'), (int, float)) or data.get('koi_steff', 0) <= 0:
+        validation_errors.append("koi_steff must be a positive number (stellar temperature in Kelvin)")
+
+    # Check for obviously invalid values (like all zeros)
+    all_zeros = all(data.get(param, 0) == 0 for param in required_params)
+    if all_zeros:
+        return {
+            "error": "Invalid input: All parameters are zero. Please provide realistic exoplanet parameters.",
+            "status": "invalid_input",
+            "suggestion": "Try values like: period=365, radius=1.0, temperature=288, stellar_temp=5778 (Earth-like planet)"
+        }
+
+    # Check for unrealistic values
+    if data.get('koi_period', 0) > 10000:  # Orbital period > 27 years
+        validation_errors.append("koi_period seems unrealistic (>10000 days)")
+
+    if data.get('koi_prad', 0) > 100:  # Planet radius > 100 Earth radii
+        validation_errors.append("koi_prad seems unrealistic (>100 Earth radii)")
+
+    if data.get('koi_teq', 0) > 5000:  # Temperature > 5000K
+        validation_errors.append("koi_teq seems unrealistic (>5000K)")
+
+    if data.get('koi_steff', 0) > 20000:  # Stellar temperature > 20000K
+        validation_errors.append("koi_steff seems unrealistic (>20000K)")
+
+    if validation_errors:
+        return {
+            "error": "Parameter validation failed",
+            "status": "invalid_input",
+            "validation_errors": validation_errors,
+            "provided_values": {param: data.get(param) for param in required_params}
+        }
+
     if not models_loaded:
         return {
             "prediction": "CANDIDATE",
@@ -427,6 +486,29 @@ async def predict(data: dict):
             stellar_temp = data.get('koi_steff', 5778)
             
             # Enhanced rule-based prediction using ML training data similarity
+            # Prepare features for similarity matching
+            features = [
+                data.get('koi_period', 365.25),
+                data.get('koi_duration', 6.0),
+                data.get('koi_depth', 500.0),
+                data.get('koi_prad', 1.0),
+                data.get('koi_teq', 288.0),
+                data.get('koi_insol', 1.0),
+                data.get('koi_model_snr', 25.0),
+                data.get('koi_steff', 5778.0),
+                data.get('koi_slogg', 4.4),
+                data.get('koi_srad', 1.0),
+                data.get('koi_smass', 1.0),
+                data.get('koi_kepmag', 12.0),
+                data.get('koi_fpflag_nt', 0),
+                data.get('koi_fpflag_ss', 0),
+                data.get('koi_fpflag_co', 0),
+                data.get('koi_fpflag_ec', 0),
+                data.get('ra', 0.0),
+                data.get('dec', 0.0),
+                data.get('koi_score', 0.5)
+            ]
+            
             # Try to find similar planet in training data first
             similar_planet, similarity_score = find_similar_planet(features, data)
             
@@ -502,12 +584,26 @@ async def predict(data: dict):
                 
                 # Try similarity matching even in fallback mode
                 similar_planet, similarity_score = find_similar_planet(features, data)
-                
+
                 if similar_planet is not None and similarity_score > 0.3:
                     planet_name = similar_planet.get('kepler_name', '')
                     if planet_name and planet_name.strip():
                         print(f"Fallback: Found similar planet {planet_name} (similarity: {similarity_score:.3f})")
                         match_status = "similarity_matched_fallback"
+                        # Return immediately when similar planet found
+                        return {
+                            "prediction": prediction,
+                            "probabilities": {prediction: confidence, "CANDIDATE": 0.1, "FALSE POSITIVE": 0.05},
+                            "confidence": confidence,
+                            "habitability_score": hab_score,
+                            "planet_type": planet_type,
+                            "planet_name": planet_name.strip(),
+                            "star_type": star_type,
+                            "match_status": match_status,
+                            "similarity_score": similarity_score,
+                            "status": "fallback_prediction",
+                            "note": "XGBoost compatibility issue, using similarity-matched fallback"
+                        }
                     else:
                         planet_name = generate_planet_name(data, prediction)
                         match_status = "fallback_prediction"

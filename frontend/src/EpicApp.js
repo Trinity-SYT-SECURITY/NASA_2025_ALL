@@ -534,137 +534,165 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds, e
           <div className="ai-status">Neural Networks Active • 92.16% Accuracy</div>
         </div>
       
-      {/* Enhanced Presets */}
-      <div className="presets-grid">
-        {Object.entries(presets).map(([key, preset]) => (
-          <button 
-            key={key}
-            onClick={() => handlePreset(key)} 
-            className={`preset-btn ${key}`}
-          >
-            <div className="preset-icon">
-              {key === 'earth' && '🌍'}
-              {key === 'hotJupiter' && '🔥'}
-              {key === 'superEarth' && '🌎'}
-              {key === 'frozen' && '❄️'}
-            </div>
-            <div className="preset-name">{preset.name}</div>
-          </button>
-        ))}
-      </div>
-      
-      <form onSubmit={handleSubmit}>
-        <div className="param-grid enhanced">
-          <div className="param-item">
-            <label>Orbital Period</label>
-            <input
-              type="number"
-              value={params.koi_period}
-              onChange={(e) => setParams({...params, koi_period: parseFloat(e.target.value)})}
-              step="0.1"
-            />
-            <span className="param-unit">days</span>
-          </div>
-          
-          <div className="param-item">
-            <label>Planet Radius</label>
-            <input
-              type="number"
-              value={params.koi_prad}
-              onChange={(e) => setParams({...params, koi_prad: parseFloat(e.target.value)})}
-              step="0.1"
-            />
-            <span className="param-unit">Earth radii</span>
-          </div>
-          
-          <div className="param-item">
-            <label>Equilibrium Temperature</label>
-            <input
-              type="number"
-              value={params.koi_teq}
-              onChange={(e) => setParams({...params, koi_teq: parseFloat(e.target.value)})}
-            />
-            <span className="param-unit">Kelvin</span>
-          </div>
-          
-          <div className="param-item">
-            <label>Stellar Temperature</label>
-            <input
-              type="number"
-              value={params.koi_steff}
-              onChange={(e) => setParams({...params, koi_steff: parseFloat(e.target.value)})}
-            />
-            <span className="param-unit">Kelvin</span>
-          </div>
+        {/* Enhanced Presets */}
+        <div className="presets-grid">
+          {Object.entries(presets).map(([key, preset]) => (
+            <button 
+              key={key}
+              onClick={() => handlePreset(key)} 
+              className={`preset-btn ${key}`}
+            >
+              <div className="preset-icon">
+                {key === 'earth' && '🌍'}
+                {key === 'hotJupiter' && '🔥'}
+                {key === 'superEarth' && '🌎'}
+                {key === 'frozen' && '❄️'}
+              </div>
+              <div className="preset-name">{preset.name}</div>
+            </button>
+          ))}
         </div>
         
-        <button type="submit" disabled={loading} className="predict-button epic">
-          <span className="btn-icon">{loading ? '🔄' : '🚀'}</span>
-          <span className="btn-text">
-            {loading ? 'AI ANALYZING...' : 'PREDICT & MATERIALIZE'}
-          </span>
-        </button>
-      </form>
-      
-      {prediction && (
-        <div className="prediction-results epic">
-          <h3>🎯 AI PREDICTION RESULT</h3>
-          <div className="result-grid enhanced">
-            <div className="result-card primary">
-              <div className="result-icon">🏷️</div>
-              <div className="result-content">
-                <div className="result-label">Classification</div>
-                <div className="result-value">{prediction.prediction}</div>
-              </div>
+        <form onSubmit={handleSubmit}>
+          <div className="param-grid enhanced">
+            <div className="param-item">
+              <label>Orbital Period</label>
+              <input
+                type="number"
+                value={params.koi_period}
+                onChange={(e) => setParams({...params, koi_period: parseFloat(e.target.value)})}
+                step="0.1"
+              />
+              <span className="param-unit">days</span>
             </div>
             
-            <div className="result-card">
-              <div className="result-icon">📊</div>
-              <div className="result-content">
-                <div className="result-label">Confidence</div>
-                <div className="result-value">
-                  {prediction.confidence ? (prediction.confidence * 100).toFixed(1) : '0.0'}%
-                </div>
-              </div>
+            <div className="param-item">
+              <label>Planet Radius</label>
+              <input
+                type="number"
+                value={params.koi_prad}
+                onChange={(e) => setParams({...params, koi_prad: parseFloat(e.target.value)})}
+                step="0.1"
+              />
+              <span className="param-unit">Earth radii</span>
             </div>
             
-            <div className="result-card">
-              <div className="result-icon">🌍</div>
-              <div className="result-content">
-                <div className="result-label">Habitability</div>
-                <div className="result-value">{prediction.habitability_score || 0}/100</div>
-              </div>
+            <div className="param-item">
+              <label>Equilibrium Temperature</label>
+              <input
+                type="number"
+                value={params.koi_teq}
+                onChange={(e) => setParams({...params, koi_teq: parseFloat(e.target.value)})}
+              />
+              <span className="param-unit">Kelvin</span>
             </div>
             
-            <div className="result-card">
-              <div className="result-icon">🪐</div>
-              <div className="result-content">
-                <div className="result-label">Planet Type</div>
-                <div className="result-value">{prediction.planet_type || 'Unknown'}</div>
-              </div>
+            <div className="param-item">
+              <label>Stellar Temperature</label>
+              <input
+                type="number"
+                value={params.koi_steff}
+                onChange={(e) => setParams({...params, koi_steff: parseFloat(e.target.value)})}
+              />
+              <span className="param-unit">Kelvin</span>
             </div>
           </div>
           
-          {/* Probability Breakdown */}
-          <div className="probability-breakdown">
-            <h4>Classification Probabilities</h4>
-            {prediction.probabilities && Object.entries(prediction.probabilities).map(([category, prob]) => (
-              <div key={category} className="prob-item">
-                <span className="prob-label">{category}</span>
-                <div className="prob-bar">
-                  <div 
-                    className="prob-fill" 
-                    style={{ width: `${prob * 100}%` }}
-                  ></div>
+          <button type="submit" disabled={loading} className="predict-button epic">
+            <span className="btn-icon">{loading ? '🔄' : '🚀'}</span>
+            <span className="btn-text">
+              {loading ? 'AI ANALYZING...' : 'PREDICT & MATERIALIZE'}
+            </span>
+          </button>
+        </form>
+        
+        {prediction && (
+          <div className="prediction-results epic">
+            <h3>🎯 AI PREDICTION RESULT</h3>
+
+            {/* Show validation errors if present */}
+            {prediction.status === "invalid_input" && (
+              <div className="validation-error">
+                <div className="error-icon">⚠️</div>
+                <div className="error-content">
+                  <h4>Input Validation Error</h4>
+                  <p className="error-message">{prediction.error}</p>
+                  {prediction.validation_errors && (
+                    <ul className="error-list">
+                      {prediction.validation_errors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {prediction.suggestion && (
+                    <p className="error-suggestion">
+                      💡 <strong>Suggestion:</strong> {prediction.suggestion}
+                    </p>
+                  )}
                 </div>
-                <span className="prob-value">{(prob * 100).toFixed(1)}%</span>
               </div>
-            ))}
+            )}
+
+            {/* Show normal prediction results only if not invalid input */}
+            {prediction.status !== "invalid_input" && (
+              <>
+                <div className="result-grid enhanced">
+                  <div className="result-card primary">
+                    <div className="result-icon">🏷️</div>
+                    <div className="result-content">
+                      <div className="result-label">Classification</div>
+                      <div className="result-value">{prediction.prediction}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="result-card">
+                    <div className="result-icon">📊</div>
+                    <div className="result-content">
+                      <div className="result-label">Confidence</div>
+                      <div className="result-value">
+                        {prediction.confidence ? (prediction.confidence * 100).toFixed(1) : '0.0'}%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="result-card">
+                    <div className="result-icon">🌍</div>
+                    <div className="result-content">
+                      <div className="result-label">Habitability</div>
+                      <div className="result-value">{prediction.habitability_score || 0}/100</div>
+                    </div>
+                  </div>
+                  
+                  <div className="result-card">
+                    <div className="result-icon">🪐</div>
+                    <div className="result-content">
+                      <div className="result-label">Planet Type</div>
+                      <div className="result-value">{prediction.planet_type || 'Unknown'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="probability-breakdown">
+                  <h4>Classification Probabilities</h4>
+                  {prediction.probabilities && Object.entries(prediction.probabilities).map(([category, prob]) => (
+                    <div key={category} className="prob-item">
+                      <span className="prob-label">{category}</span>
+                      <div className="prob-bar">
+                        <div 
+                          className="prob-fill" 
+                          style={{ width: `${prob * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="prob-value">{(prob * 100).toFixed(1)}%</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-        </div>
-      )}
+        )}
       </div>
-    </div>
+    </div>  
   );
 }
 
@@ -962,7 +990,25 @@ function App() {
       
     } catch (error) {
       console.error('Prediction failed:', error);
-      // Show demo prediction even if API fails
+
+      // Check if it's a validation error (invalid input)
+      if (error.response?.status === 400 || error.response?.data?.status === "invalid_input") {
+        const validationError = error.response.data;
+        setPrediction({
+          error: validationError.error,
+          status: "invalid_input",
+          validation_errors: validationError.validation_errors,
+          suggestion: validationError.suggestion,
+          provided_values: validationError.provided_values
+        });
+        setBackendStatus(prev => ({
+          ...prev,
+          error: `Invalid input parameters: ${validationError.error}`
+        }));
+        return;
+      }
+
+      // Show demo prediction for other errors
       const demoPrediction = {
         prediction: "CANDIDATE",
         confidence: 0.78,
@@ -1265,8 +1311,8 @@ function App() {
         </div>
       </div>
 
-      {/* Epic Loading Screen */}
-      {loading && (
+       {/* Epic Loading Screen */}
+       {loading && (
         <div className="loading-screen epic">
           <div className="loading-content">
             <div className="loading-spinner epic"></div>
