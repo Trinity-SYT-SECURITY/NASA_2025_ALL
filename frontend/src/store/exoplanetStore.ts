@@ -1,14 +1,9 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-// 從環境變數或默認值獲取後端 URL
+// FORCE: Always use Render backend to avoid CORS issues
 const getApiBaseUrl = () => {
-  // 嘗試從環境變數獲取
-  if (typeof process !== 'undefined' && process.env) {
-    if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
-  }
-
-  // 默認使用 Render 後端
+  console.log('🔧 Store: Forcing Render backend to avoid CORS issues');
   return 'https://test-backend-2-ikqg.onrender.com';
 };
 

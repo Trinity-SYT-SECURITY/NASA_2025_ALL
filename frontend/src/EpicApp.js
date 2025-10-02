@@ -14,7 +14,6 @@ const detectBackendType = async () => {
   // Priority: Render > ngrok > Local FastAPI > Vercel > Mock
   const backends = [
     { name: 'render', url: 'https://test-backend-2-ikqg.onrender.com', testUrl: '/health' },
-    { name: 'ngrok', url: 'https://5b2a2202c984.ngrok-free.app', testUrl: '/?endpoint=health' },
     { name: 'local_fastapi', url: 'http://localhost:8000', testUrl: '/health' },
   ];
 
@@ -65,15 +64,8 @@ const detectBackendType = async () => {
 };
 
 const getApiBaseUrl = () => {
-  // Try multiple environment variable sources
-  if (typeof process !== 'undefined' && process.env) {
-    if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
-    if (process.env.VITE_API_URL) return process.env.VITE_API_URL;
-  }
-
-  // Already handled by process.env above
-
-  // Default: use detected backend or ngrok as fallback
+  // FORCE: Always use Render backend to avoid CORS issues
+  console.log('🔧 Forcing Render backend to avoid CORS issues');
   return 'https://test-backend-2-ikqg.onrender.com';
 };
 
