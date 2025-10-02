@@ -197,98 +197,62 @@ except Exception as e:
     print(f"Warning: Running in demo mode - Error loading models: {e}")
 
 def generate_planet_name(data: dict, prediction: str) -> str:
-    """Generate a realistic Kepler planet name based on characteristics"""
+    """Generate planet name using ML training data similarity matching"""
+    
+    # Load training data if not already loaded
+    load_training_data()
+    
+    # First try to find similar planet in training data
+    features = [
+        data.get('koi_period', 365.25),
+        data.get('koi_duration', 6.0),
+        data.get('koi_depth', 500.0),
+        data.get('koi_prad', 1.0),
+        data.get('koi_teq', 288.0),
+        data.get('koi_insol', 1.0),
+        data.get('koi_model_snr', 25.0),
+        data.get('koi_steff', 5778.0),
+        data.get('koi_slogg', 4.44),
+        data.get('koi_srad', 1.0),
+        data.get('koi_smass', 1.0),
+        data.get('koi_kepmag', 12.0),
+        data.get('koi_fpflag_nt', 0),
+        data.get('koi_fpflag_ss', 0),
+        data.get('koi_fpflag_co', 0),
+        data.get('koi_fpflag_ec', 0),
+        data.get('ra', 290.0),
+        data.get('dec', 45.0),
+        1 if 0.25 <= data.get('koi_insol', 1.0) <= 1.5 else 0,
+        data.get('koi_score', 0.5)
+    ]
+    
+    # Use similarity matching to find real planet name from training data
+    similar_planet, similarity_score = find_similar_planet(features, data)
+    
+    if similar_planet is not None and similarity_score > 0.3:
+        # Found similar planet in training data
+        planet_name = similar_planet.get('kepler_name', '')
+        if planet_name and planet_name.strip():
+            print(f"Found similar planet from training data: {planet_name} (similarity: {similarity_score:.3f})")
+            return planet_name.strip()
+    
+    # If no similar planet found in training data, return descriptive name
+    # This indicates the prediction is based on ML model, not exact match
     radius = data.get('koi_prad', 1.0)
-    temp = data.get('koi_teq', 288)
-    period = data.get('koi_period', 365.25)
-    stellar_temp = data.get('koi_steff', 5778)
     
-    # Try to match with known planet parameters first (with tolerance)
-    known_planets = {
-        # Kepler-62f parameters (267.3, 1.41, 208, 4925)
-        (267.3, 1.41, 208, 4925): "Kepler-62 f",
-        # Kepler-442b parameters (112.3, 1.34, 233, 4402)
-        (112.3, 1.34, 233, 4402): "Kepler-442 b",
-        # Kepler-22b parameters (289.9, 2.38, 262, 5518)
-        (289.9, 2.38, 262, 5518): "Kepler-22 b",
-        # Kepler-186f parameters (129.9, 1.17, 188, 3788)
-        (129.9, 1.17, 188, 3788): "Kepler-186 f",
-        # Kepler-452b parameters (384.8, 1.63, 265, 5757)
-        (384.8, 1.63, 265, 5757): "Kepler-452 b",
-        # Kepler-438b parameters (35.2, 1.12, 276, 3748)
-        (35.2, 1.12, 276, 3748): "Kepler-438 b",
-        # Kepler-69c parameters (242.5, 1.71, 299, 5638)
-        (242.5, 1.71, 299, 5638): "Kepler-69 c",
-        # Kepler-62e parameters (122.4, 1.61, 270, 4925)
-        (122.4, 1.61, 270, 4925): "Kepler-62 e",
-        # Kepler-296e parameters (34.1, 1.53, 267, 3748)
-        (34.1, 1.53, 267, 3748): "Kepler-296 e",
-        # Kepler-10b parameters (0.8, 1.47, 2169, 5627)
-        (0.8, 1.47, 2169, 5627): "Kepler-10 b",
-        # Kepler-11b parameters (10.3, 1.80, 900, 5680)
-        (10.3, 1.80, 900, 5680): "Kepler-11 b",
-        # Kepler-20b parameters (3.7, 1.91, 1033, 5455)
-        (3.7, 1.91, 1033, 5455): "Kepler-20 b",
-        # Kepler-227b parameters (9.49, 2.26, 793, 5455)
-        (9.49, 2.26, 793, 5455): "Kepler-227 b",
-        # Kepler-227c parameters (54.42, 2.83, 443, 5455)
-        (54.42, 2.83, 443, 5455): "Kepler-227 c",
-        # Kepler-664b parameters (2.53, 2.75, 1406, 6031)
-        (2.53, 2.75, 1406, 6031): "Kepler-664 b"
-    }
-    
-    # Check for exact match with tolerance
-    for (known_period, known_radius, known_temp, known_stellar_temp), planet_name in known_planets.items():
-        if (abs(period - known_period) < 2.0 and 
-            abs(radius - known_radius) < 0.2 and 
-            abs(temp - known_temp) < 20.0 and 
-            abs(stellar_temp - known_stellar_temp) < 200.0):
-            print(f"Found exact match for {planet_name}")
-            return planet_name
-
-    # Fallback to category-based selection
-    if temp >= 200 and temp <= 300 and radius >= 0.8 and radius <= 1.5:
-        # Earth-like planets
-        earth_like = [
-            "Kepler-442 b", "Kepler-186 f", "Kepler-452 b", "Kepler-62 f",
-            "Kepler-283 c", "Kepler-296 f", "Kepler-438 b", "Kepler-440 b"
-        ]
-        return random.choice(earth_like)
-    elif radius > 1.5 and radius <= 3.0:
-        # Super-Earth planets
-        super_earth = [
-            "Kepler-22 b", "Kepler-69 c", "Kepler-62 e", "Kepler-61 b",
-            "Kepler-102 e", "Kepler-107 c", "Kepler-108 c", "Kepler-122 e"
-        ]
-        return random.choice(super_earth)
-    elif radius > 3.0 and radius <= 6.0:
-        # Neptune-like planets
-        neptune_like = [
-            "Kepler-10 c", "Kepler-18 d", "Kepler-51 d", "Kepler-68 d",
-            "Kepler-419 b", "Kepler-420 b", "Kepler-421 b", "Kepler-422 b"
-        ]
-        return random.choice(neptune_like)
-    elif radius > 6.0:
-        # Gas giant planets
-        gas_giants = [
-            "Kepler-7 b", "Kepler-8 b", "Kepler-12 b", "Kepler-13 b",
-            "Kepler-14 b", "Kepler-15 b", "Kepler-16 b", "Kepler-17 b"
-        ]
-        return random.choice(gas_giants)
-    elif temp > 1000:
-        # Hot planets
-        hot_planets = [
-            "Kepler-10 b", "Kepler-78 b", "Kepler-406 b", "Kepler-412 b",
-            "Kepler-41 b", "Kepler-43 b", "Kepler-44 b", "Kepler-45 b"
-        ]
-        return random.choice(hot_planets)
+    if radius < 0.8:
+        planet_type = "Sub-Earth"
+    elif radius <= 1.25:
+        planet_type = "Earth-like"
+    elif radius <= 2.0:
+        planet_type = "Super-Earth"
+    elif radius <= 4.0:
+        planet_type = "Mini-Neptune"
     else:
-        # Other planets
-        other_planets = [
-            "Kepler-227 b", "Kepler-227 c", "Kepler-23 b", "Kepler-24 b",
-            "Kepler-25 b", "Kepler-26 b", "Kepler-27 b", "Kepler-28 b"
-        ]
-        return random.choice(other_planets)
+        planet_type = "Giant"
+    
+    # Return AI prediction name to indicate this is ML-based, not exact match
+    return f"AI Predicted {planet_type}"
 
 @app.get("/")
 async def root():
@@ -462,65 +426,37 @@ async def predict(data: dict):
             period = data.get('koi_period', 365.25)
             stellar_temp = data.get('koi_steff', 5778)
             
-            # Enhanced rule-based prediction with higher confidence for real planets
-            # Check if this matches a known real planet
-            known_planets = {
-                (267.3, 1.41, 208, 4925): "Kepler-62 f",
-                (112.3, 1.34, 233, 4402): "Kepler-442 b",
-                (289.9, 2.38, 262, 5518): "Kepler-22 b",
-                (129.9, 1.17, 188, 3788): "Kepler-186 f",
-                (384.8, 1.63, 265, 5757): "Kepler-452 b",
-                (35.2, 1.12, 276, 3748): "Kepler-438 b",
-                (242.5, 1.71, 299, 5638): "Kepler-69 c",
-                (122.4, 1.61, 270, 4925): "Kepler-62 e",
-                (34.1, 1.53, 267, 3748): "Kepler-296 e",
-                (0.8, 1.47, 2169, 5627): "Kepler-10 b",
-                (10.3, 1.80, 900, 5680): "Kepler-11 b",
-                (3.7, 1.91, 1033, 5455): "Kepler-20 b",
-                (9.49, 2.26, 793, 5455): "Kepler-227 b",
-                (54.42, 2.83, 443, 5455): "Kepler-227 c",
-                (2.53, 2.75, 1406, 6031): "Kepler-664 b"
-            }
+            # Enhanced rule-based prediction using ML training data similarity
+            # Try to find similar planet in training data first
+            similar_planet, similarity_score = find_similar_planet(features, data)
             
-            # Check for exact match with tolerance
-            is_real_planet = False
-            for (known_period, known_radius, known_temp, known_stellar_temp), planet_name in known_planets.items():
-                if (abs(period - known_period) < 2.0 and 
-                    abs(radius - known_radius) < 0.2 and 
-                    abs(temp - known_temp) < 20.0 and 
-                    abs(stellar_temp - known_stellar_temp) < 200.0):
-                    is_real_planet = True
-                    break
-            
-            # Set confidence based on whether it's a real planet
-            if is_real_planet:
-                # Real planet - very high confidence
+            # Set confidence and prediction based on similarity to training data
+            if similar_planet is not None and similarity_score > 0.3:
+                # Found similar planet in training data - high confidence
+                prediction = "CONFIRMED"
                 if radius < 1.5 and 200 <= temp <= 400:
-                    prediction = "CONFIRMED"
                     planet_type = "Earth-like"
-                    confidence = 0.95  # Very high for real planets
+                    confidence = min(0.95, 0.75 + similarity_score * 0.3)  # 75-95% based on similarity
                 elif radius < 2.5:
-                    prediction = "CONFIRMED"
                     planet_type = "Super-Earth"
-                    confidence = 0.93  # Very high for real planets
+                    confidence = min(0.93, 0.73 + similarity_score * 0.3)  # 73-93% based on similarity
                 else:
-                    prediction = "CONFIRMED"
                     planet_type = "Gas Giant"
-                    confidence = 0.95  # Very high for real planets
+                    confidence = min(0.95, 0.75 + similarity_score * 0.3)  # 75-95% based on similarity
             else:
-                # Generic prediction - standard confidence
+                # No similar planet found - standard ML-based prediction
                 if radius < 1.5 and 200 <= temp <= 400:
                     prediction = "CONFIRMED"
                     planet_type = "Earth-like"
-                    confidence = 0.85
+                    confidence = 0.75  # Standard confidence for ML predictions
                 elif radius < 2.5:
                     prediction = "CONFIRMED"
                     planet_type = "Super-Earth"
-                    confidence = 0.80
+                    confidence = 0.70  # Standard confidence for ML predictions
                 else:
                     prediction = "CONFIRMED"
                     planet_type = "Gas Giant"
-                    confidence = 0.90
+                    confidence = 0.80  # Standard confidence for ML predictions
             
             # Calculate habitability
             hab_score = 0
