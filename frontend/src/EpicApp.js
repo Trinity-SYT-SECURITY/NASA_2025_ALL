@@ -14,7 +14,7 @@ const detectBackendType = async () => {
   // Priority: Render > ngrok > Local FastAPI > Vercel > Mock
   const backends = [
     { name: 'render', url: 'https://test-backend-2-ikqg.onrender.com', testUrl: '/health' },
-    { name: 'ngrok', url: 'https://483d13a1412e.ngrok-free.app', testUrl: '/?endpoint=health' },
+    { name: 'ngrok', url: 'https://5b2a2202c984.ngrok-free.app', testUrl: '/?endpoint=health' },
     { name: 'local_fastapi', url: 'http://localhost:8000', testUrl: '/health' },
   ];
 
