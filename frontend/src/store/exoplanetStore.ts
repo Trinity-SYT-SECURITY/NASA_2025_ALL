@@ -1,10 +1,16 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-// For local development, use local backend
+// Determine API base URL based on environment
 const getApiBaseUrl = () => {
-  console.log('🔧 Store: Using local backend for development');
-  return 'http://localhost:8000';
+  // Check if we're in production (Vercel)
+  if (window.location.hostname !== 'localhost') {
+    console.log('🔧 Store: Using Render backend for production');
+    return 'https://test-backend-2-ikqg.onrender.com';
+  } else {
+    console.log('🔧 Store: Using local backend for development');
+    return 'http://localhost:8000';
+  }
 };
 
 const API_BASE_URL = getApiBaseUrl();

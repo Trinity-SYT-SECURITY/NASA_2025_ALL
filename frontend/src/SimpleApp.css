@@ -218,8 +218,8 @@
   position: fixed;
   top: 20px;
   left: 20px;
-  background: rgba(10, 10, 30, 0.98) !important;
-  backdrop-filter: blur(25px);
+  background: rgba(10, 10, 30, 0.95);
+  backdrop-filter: blur(20px);
   border: 2px solid rgba(0, 212, 255, 0.4);
   border-radius: 20px;
   color: white;
@@ -227,9 +227,6 @@
   box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
   transition: all 0.3s ease;
   overflow: hidden;
-  /* Ensure no background text shows through */
-  -webkit-backdrop-filter: blur(25px);
-  isolation: isolate;
 }
 
 .ai-panel.collapsed {
@@ -239,7 +236,7 @@
 
 .ai-panel.expanded {
   width: 420px;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 60px);
   padding: 25px 25px 25px 35px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -255,14 +252,10 @@
   transition: all 0.2s ease;
   font-size: 14px;
   font-weight: 600;
-  background: rgba(10, 10, 30, 0.98);
-  border-radius: 8px;
-  z-index: 1001;
-  position: relative;
 }
 
 .ai-compact-header:hover {
-  background: rgba(0, 212, 255, 0.15) !important;
+  background: rgba(0, 212, 255, 0.1);
   border-radius: 10px;
   padding: 6px 8px;
 }
@@ -305,11 +298,10 @@
 }
 
 .ai-panel-content.visible {
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 140px);
   opacity: 1;
   margin-top: 15px;
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .ai-panel h2 {

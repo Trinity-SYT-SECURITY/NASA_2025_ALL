@@ -471,13 +471,56 @@ async def predict(data: dict):
             elif stellar_temp < 7500: star_type = "F-dwarf"
             else: star_type = "A-dwarf"
             
-            # Try to get planet name
+            # Enhanced fallback with similarity matching
             try:
+                # Load training data for similarity matching
+                load_training_data()
+                
+                # Prepare features for similarity matching
+                features = [
+                    data.get('koi_period', 365.25),
+                    data.get('koi_duration', 6.0),
+                    data.get('koi_depth', 500.0),
+                    data.get('koi_prad', 1.0),
+                    data.get('koi_teq', 288.0),
+                    data.get('koi_insol', 1.0),
+                    data.get('koi_model_snr', 25.0),
+                    data.get('koi_steff', 5778.0),
+                    data.get('koi_slogg', 4.44),
+                    data.get('koi_srad', 1.0),
+                    data.get('koi_smass', 1.0),
+                    data.get('koi_kepmag', 12.0),
+                    data.get('koi_fpflag_nt', 0),
+                    data.get('koi_fpflag_ss', 0),
+                    data.get('koi_fpflag_co', 0),
+                    data.get('koi_fpflag_ec', 0),
+                    data.get('ra', 290.0),
+                    data.get('dec', 45.0),
+                    1 if 0.25 <= data.get('koi_insol', 1.0) <= 1.5 else 0,
+                    data.get('koi_score', 0.5)
+                ]
+                
+                # Try similarity matching even in fallback mode
+                similar_planet, similarity_score = find_similar_planet(features, data)
+                
+                if similar_planet is not None and similarity_score > 0.3:
+                    planet_name = similar_planet.get('kepler_name', '')
+                    if planet_name and planet_name.strip():
+                        print(f"Fallback: Found similar planet {planet_name} (similarity: {similarity_score:.3f})")
+                        match_status = "similarity_matched_fallback"
+                    else:
+                        planet_name = generate_planet_name(data, prediction)
+                        match_status = "fallback_prediction"
+                        similarity_score = 0.0
+                else:
+                    planet_name = generate_planet_name(data, prediction)
+                    match_status = "fallback_prediction"
+                    if similarity_score is None:
+                        similarity_score = 0.0
+                        
+            except Exception as fallback_error:
+                print(f"Enhanced fallback error: {fallback_error}")
                 planet_name = generate_planet_name(data, prediction)
-                match_status = "fallback_prediction"
-                similarity_score = 0.0
-            except:
-                planet_name = f"AI Predicted {planet_type}"
                 match_status = "fallback_prediction"
                 similarity_score = 0.0
             

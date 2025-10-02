@@ -703,61 +703,47 @@ function App() {
   const checkBackendStatus = async () => {
     const currentTime = new Date().toLocaleTimeString();
     
-    try {
-      console.log('🔍 Checking backend status...');
-      
-      // Test local backend first
-      const testUrl = 'http://localhost:8000';
-      const response = await axios.get(`${testUrl}/health`, { 
-        timeout: 3000,
-        headers: { 'Accept': 'application/json' }
-      });
-      
-      if (response.status === 200 && response.data) {
-        setBackendStatus({
-          connected: true,
-          url: testUrl,
-          lastCheck: currentTime,
-          modelsLoaded: response.data.models_loaded || false,
-          error: null
-        });
-        console.log('✅ Local backend connected:', response.data);
-        return testUrl;
-      }
-    } catch (localError) {
-      console.log('❌ Local backend failed:', localError.message);
-      
-      // Try Render backend as fallback
+    // Determine backend URLs based on environment
+    const backendUrls = [
+      'https://test-backend-2-ikqg.onrender.com', // Render backend (production)
+      'http://localhost:8000' // Local backend (development)
+    ];
+    
+    for (const testUrl of backendUrls) {
       try {
-        const renderUrl = 'https://test-backend-2-ikqg.onrender.com';
-        const response = await axios.get(`${renderUrl}/health`, { 
+        console.log(`🔍 Testing backend: ${testUrl}`);
+        
+        const response = await axios.get(`${testUrl}/health`, { 
           timeout: 5000,
           headers: { 'Accept': 'application/json' }
         });
         
         if (response.status === 200 && response.data) {
+          console.log(`✅ Backend connected: ${testUrl}`);
           setBackendStatus({
             connected: true,
-            url: renderUrl,
+            url: testUrl,
             lastCheck: currentTime,
             modelsLoaded: response.data.models_loaded || false,
             error: null
           });
-          console.log('✅ Render backend connected:', response.data);
-          return renderUrl;
+          return testUrl; // Return the working backend URL
         }
-      } catch (renderError) {
-        console.log('❌ Render backend failed:', renderError.message);
-        
-        setBackendStatus({
-          connected: false,
-          url: '',
-          lastCheck: currentTime,
-          modelsLoaded: false,
-          error: `Local: ${localError.message.substring(0, 30)}...`
-        });
+      } catch (error) {
+        console.log(`❌ Backend ${testUrl} failed:`, error.message);
+        continue; // Try next backend
       }
     }
+    
+    // If no backend is available
+    console.log('❌ No backend available');
+    setBackendStatus({
+      connected: false,
+      url: '',
+      lastCheck: currentTime,
+      modelsLoaded: false,
+      error: 'No backend available'
+    });
     
     return null;
   };
