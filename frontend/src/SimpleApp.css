@@ -213,20 +213,101 @@
 }
 
 /* AI Panel */
+/* Collapsible AI Panel */
 .ai-panel {
   position: fixed;
   top: 20px;
-  left: 50px;
-  width: 420px;
-  max-height: calc(100vh - 40px);
-  background: rgba(10, 10, 30, 0.95);
-  backdrop-filter: blur(20px);
+  left: 20px;
+  background: rgba(10, 10, 30, 0.98) !important;
+  backdrop-filter: blur(25px);
   border: 2px solid rgba(0, 212, 255, 0.4);
   border-radius: 20px;
-  padding: 25px 25px 25px 35px;
   color: white;
   z-index: 1000;
   box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  /* Ensure no background text shows through */
+  -webkit-backdrop-filter: blur(25px);
+  isolation: isolate;
+}
+
+.ai-panel.collapsed {
+  width: 180px;
+  padding: 12px 15px;
+}
+
+.ai-panel.expanded {
+  width: 420px;
+  max-height: calc(100vh - 40px);
+  padding: 25px 25px 25px 35px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Compact header - always visible */
+.ai-compact-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(10, 10, 30, 0.98);
+  border-radius: 8px;
+  z-index: 1001;
+  position: relative;
+}
+
+.ai-compact-header:hover {
+  background: rgba(0, 212, 255, 0.15) !important;
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+
+.ai-icon {
+  font-size: 16px;
+}
+
+.ai-compact-title {
+  flex: 1;
+  color: #00d4ff;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 0.5px;
+}
+
+.ai-panel .expand-icon {
+  color: #00d4ff;
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.ai-panel.collapsed .expand-icon {
+  transform: rotate(0deg);
+}
+
+.ai-panel.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+/* Expandable content */
+.ai-panel-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.ai-panel-content.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+
+.ai-panel-content.visible {
+  max-height: calc(100vh - 120px);
+  opacity: 1;
+  margin-top: 15px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -904,4 +985,225 @@
   font-weight: 700;
   margin-top: 15px;
   animation: pulse 2s infinite;
+}
+
+/* Collapsible Backend Status Indicator */
+.backend-status-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #00ffff;
+  border-radius: 10px;
+  font-family: 'Orbitron', monospace;
+  color: #ffffff;
+  backdrop-filter: blur(15px);
+  z-index: 9999;
+  box-shadow: 0 4px 25px rgba(0, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.backend-status-indicator.collapsed {
+  width: 200px;
+  padding: 8px 12px;
+}
+
+.backend-status-indicator.expanded {
+  width: 320px;
+  padding: 15px;
+}
+
+/* Compact header - always visible */
+.status-compact-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: all 0.2s ease;
+  font-size: 12px;
+}
+
+.status-compact-header:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 4px 6px;
+}
+
+.status-compact-title {
+  flex: 1;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.expand-icon {
+  color: #00ffff;
+  font-size: 10px;
+  transition: transform 0.3s ease;
+}
+
+.backend-status-indicator.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.status-icon {
+  font-size: 14px;
+}
+
+.status-title {
+  font-weight: 600;
+  color: #00ffff;
+  flex: 1;
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  color: #00ffff;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: rotate(180deg);
+}
+
+/* Expandable details */
+.status-details {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.status-details.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+
+.status-details.visible {
+  max-height: 300px;
+  opacity: 1;
+  margin-top: 10px;
+}
+
+.status-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-row.error {
+  color: #ff6b6b;
+}
+
+.status-row .label {
+  color: #aaaaaa;
+  font-size: 11px;
+}
+
+.status-row .value {
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.status-row .value.connected {
+  color: #4ade80;
+}
+
+.status-row .value.disconnected {
+  color: #f87171;
+}
+
+.status-row .value.loaded {
+  color: #4ade80;
+}
+
+.status-row .value.not-loaded {
+  color: #fbbf24;
+}
+
+.status-row .value.url {
+  color: #60a5fa;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-row .value.time {
+  color: #d1d5db;
+  font-size: 10px;
+}
+
+  .status-row .value.error-msg {
+  color: #f87171;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+}
+
+/* Responsive adjustments for collapsible status indicator */
+@media (max-width: 768px) {
+  .backend-status-indicator.collapsed {
+    width: 180px;
+    font-size: 11px;
+  }
+  
+  .backend-status-indicator.expanded {
+    width: 280px;
+    font-size: 11px;
+  }
+  
+  .status-compact-header {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .backend-status-indicator {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+  }
+  
+  .backend-status-indicator.collapsed {
+    width: auto;
+    font-size: 10px;
+  }
+  
+  .backend-status-indicator.expanded {
+    width: auto;
+    font-size: 10px;
+  }
+  
+  .status-compact-header {
+    font-size: 10px;
+  }
+  
+  .status-row .value.url,
+  .status-row .value.error-msg {
+    max-width: 80px;
+  }
 }

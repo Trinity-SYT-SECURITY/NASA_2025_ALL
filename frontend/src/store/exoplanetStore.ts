@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-// FORCE: Always use Render backend to avoid CORS issues
+// For local development, use local backend
 const getApiBaseUrl = () => {
-  console.log('🔧 Store: Forcing Render backend to avoid CORS issues');
-  return 'https://test-backend-2-ikqg.onrender.com';
+  console.log('🔧 Store: Using local backend for development');
+  return 'http://localhost:8000';
 };
 
 const API_BASE_URL = getApiBaseUrl();

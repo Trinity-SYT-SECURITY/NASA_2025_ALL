@@ -5,24 +5,10 @@ export class MockMLService {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    const { koi_period, koi_prad, koi_teq, koi_steff, koi_insol } = params;
+    const { koi_prad, koi_teq, koi_steff, koi_insol } = params;
 
     // Feature engineering (matching the trained model's preprocessing)
-    const features = [
-      koi_period / 1000,  // Normalized orbital period
-      koi_prad,           // Planet radius
-      koi_teq / 300,      // Normalized temperature
-      koi_steff / 6000,   // Normalized stellar temperature
-      koi_insol,          // Insolation flux
-      1,                  // Stellar surface gravity (default)
-      1,                  // Stellar radius (default)
-      1,                  // Stellar mass (default)
-      12,                 // Kepler magnitude (default)
-      0, 0, 0, 0,         // Flag bits (default)
-      290, 45,            // Coordinates (default)
-      1,                  // Habitable zone (default)
-      0.5                 // Score (default)
-    ];
+    // Feature engineering removed - using direct parameter analysis instead
 
     // Simulate ML model prediction based on feature patterns
     // This mimics the behavior of a trained XGBoost model
@@ -70,7 +56,7 @@ export class MockMLService {
   }
 
   private static getPlanetName(params: any): string {
-    const { koi_period, koi_prad, koi_teq, koi_steff, koi_insol } = params;
+    const { koi_prad, koi_teq } = params;
 
     // 基於參數和預測結果生成真實的開普勒行星名稱
     let planetName = "Unknown Exoplanet";

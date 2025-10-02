@@ -7,14 +7,14 @@ import { MockMLService } from './services/mockMLService';
 import './SimpleApp.css';
 
 // 在文件頂部添加類型斷言輔助函數
-const sx = (styles) => styles;
+// const sx = (styles) => styles; // Removed unused function
 
 // Backend detection and URL management
 const detectBackendType = async () => {
   // Priority: Render > ngrok > Local FastAPI > Vercel > Mock
   const backends = [
-    { name: 'render', url: 'https://test-backend-2-ikqg.onrender.com', testUrl: '/health' },
     { name: 'local_fastapi', url: 'http://localhost:8000', testUrl: '/health' },
+    { name: 'render', url: 'https://test-backend-2-ikqg.onrender.com', testUrl: '/health' },
   ];
 
   // Try to get from environment variables first
@@ -64,9 +64,9 @@ const detectBackendType = async () => {
 };
 
 const getApiBaseUrl = () => {
-  // FORCE: Always use Render backend to avoid CORS issues
-  console.log('🔧 Forcing Render backend to avoid CORS issues');
-  return 'https://test-backend-2-ikqg.onrender.com';
+  // For local development, try local backend first
+  console.log('🔧 Local development: Trying local backend first');
+  return 'http://localhost:8000';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -187,7 +187,7 @@ function CameraController({ targetPosition, targetLookAt, isTransitioning, onTra
 }
 
 // Realistic 3D Planet inspired by planetarium
-function RealisticPlanet({ position, radius, color, name, data, onClick, isAnimating, isPredicted }) {
+function RealisticPlanet({ position, radius, color, name, data = {}, onClick, isAnimating, isPredicted }) {
   const meshRef = useRef();
   const groupRef = useRef();
   const ringRef = useRef();
@@ -319,11 +319,11 @@ function RealisticPlanet({ position, radius, color, name, data, onClick, isAnima
         <div className={`planet-label ${isAnimating ? 'pulsing' : ''} ${isPredicted ? 'predicted' : ''}`}>
           <div className="planet-name">{name}</div>
           <div className="planet-info">
-            <span className={`status ${data.disposition.toLowerCase()}`}>
-              {data.disposition}
+            <span className={`status ${data.disposition ? data.disposition.toLowerCase() : 'unknown'}`}>
+              {data.disposition || 'Unknown'}
             </span>
             <span className="habitability">
-              {data.habitability}% habitable
+              {data.habitability || 0}% habitable
             </span>
           </div>
           {isPredicted && (
@@ -479,7 +479,7 @@ function EpicExoplanetUniverse({ exoplanets, onPlanetClick, animatingPlanetId, p
 }
 
 // Enhanced AI Prediction Panel
-function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds }) {
+function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds, expanded, setExpanded }) {
   const [params, setParams] = useState({
     koi_period: 365.25,
     koi_prad: 1.0,
@@ -517,11 +517,22 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds })
   };
 
   return (
-    <div className="ai-panel epic-panel">
-      <div className="panel-header">
-        <h2>🤖 AI EXOPLANET PREDICTOR</h2>
-        <div className="ai-status">Neural Networks Active • 92.16% Accuracy</div>
+    <div className={`ai-panel epic-panel ${expanded ? 'expanded' : 'collapsed'}`}>
+      {/* Collapsible header - always visible */}
+      <div className="ai-compact-header" onClick={() => setExpanded(!expanded)}>
+        <span className="ai-icon">🤖</span>
+        <span className="ai-compact-title">AI PREDICTOR</span>
+        <span className="expand-icon">
+          {expanded ? '◀' : '▶'}
+        </span>
       </div>
+      
+      {/* Expandable content */}
+      <div className={`ai-panel-content ${expanded ? 'visible' : 'hidden'}`}>
+        <div className="panel-header">
+          <h2>🤖 AI EXOPLANET PREDICTOR</h2>
+          <div className="ai-status">Neural Networks Active • 92.16% Accuracy</div>
+        </div>
       
       {/* Enhanced Presets */}
       <div className="presets-grid">
@@ -611,7 +622,9 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds })
               <div className="result-icon">📊</div>
               <div className="result-content">
                 <div className="result-label">Confidence</div>
-                <div className="result-value">{(prediction.confidence * 100).toFixed(1)}%</div>
+                <div className="result-value">
+                  {prediction.confidence ? (prediction.confidence * 100).toFixed(1) : '0.0'}%
+                </div>
               </div>
             </div>
             
@@ -619,7 +632,7 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds })
               <div className="result-icon">🌍</div>
               <div className="result-content">
                 <div className="result-label">Habitability</div>
-                <div className="result-value">{prediction.habitability_score}/100</div>
+                <div className="result-value">{prediction.habitability_score || 0}/100</div>
               </div>
             </div>
             
@@ -627,7 +640,7 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds })
               <div className="result-icon">🪐</div>
               <div className="result-content">
                 <div className="result-label">Planet Type</div>
-                <div className="result-value">{prediction.planet_type}</div>
+                <div className="result-value">{prediction.planet_type || 'Unknown'}</div>
               </div>
             </div>
           </div>
@@ -650,6 +663,7 @@ function EnhancedAIPanel({ onPredict, prediction, loading, predictedPlanetIds })
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -663,12 +677,101 @@ function App() {
   const [stats, setStats] = useState(null);
   const [animatingPlanetId, setAnimatingPlanetId] = useState(null);
   const [predictedPlanetIds, setPredictedPlanetIds] = useState([]);
-  const [hasPredictedPlanet, setHasPredictedPlanet] = useState(false);
+  // const [hasPredictedPlanet, setHasPredictedPlanet] = useState(false); // Removed unused state
+  
+  // Backend connection status
+  const [backendStatus, setBackendStatus] = useState({
+    connected: false,
+    url: '',
+    lastCheck: null,
+    modelsLoaded: false,
+    error: null
+  });
+  
+  // Status indicator collapse/expand state
+  const [statusExpanded, setStatusExpanded] = useState(false);
+  
+  // AI panel collapse/expand state
+  const [aiPanelExpanded, setAiPanelExpanded] = useState(true);
 
   // Camera control states
   const [cameraTarget, setCameraTarget] = useState(null);
   const [cameraLookAt, setCameraLookAt] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Check backend status function
+  const checkBackendStatus = async () => {
+    const currentTime = new Date().toLocaleTimeString();
+    
+    try {
+      console.log('🔍 Checking backend status...');
+      
+      // Test local backend first
+      const testUrl = 'http://localhost:8000';
+      const response = await axios.get(`${testUrl}/health`, { 
+        timeout: 3000,
+        headers: { 'Accept': 'application/json' }
+      });
+      
+      if (response.status === 200 && response.data) {
+        setBackendStatus({
+          connected: true,
+          url: testUrl,
+          lastCheck: currentTime,
+          modelsLoaded: response.data.models_loaded || false,
+          error: null
+        });
+        console.log('✅ Local backend connected:', response.data);
+        return testUrl;
+      }
+    } catch (localError) {
+      console.log('❌ Local backend failed:', localError.message);
+      
+      // Try Render backend as fallback
+      try {
+        const renderUrl = 'https://test-backend-2-ikqg.onrender.com';
+        const response = await axios.get(`${renderUrl}/health`, { 
+          timeout: 5000,
+          headers: { 'Accept': 'application/json' }
+        });
+        
+        if (response.status === 200 && response.data) {
+          setBackendStatus({
+            connected: true,
+            url: renderUrl,
+            lastCheck: currentTime,
+            modelsLoaded: response.data.models_loaded || false,
+            error: null
+          });
+          console.log('✅ Render backend connected:', response.data);
+          return renderUrl;
+        }
+      } catch (renderError) {
+        console.log('❌ Render backend failed:', renderError.message);
+        
+        setBackendStatus({
+          connected: false,
+          url: '',
+          lastCheck: currentTime,
+          modelsLoaded: false,
+          error: `Local: ${localError.message.substring(0, 30)}...`
+        });
+      }
+    }
+    
+    return null;
+  };
+
+  // Check backend status on component mount and periodically
+  useEffect(() => {
+    // Initial check
+    checkBackendStatus();
+    
+    // Check every 30 seconds
+    const interval = setInterval(checkBackendStatus, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Initialize with some default planets for immediate visual impact
   useEffect(() => {
@@ -739,7 +842,7 @@ function App() {
           // Add unique IDs to API planets to avoid key conflicts
           const apiPlanets = planetsRes.data.exoplanets.map(planet => ({
             ...planet,
-            id: `api-${planet.id || planet.name.replace(/\s+/g, '-').toLowerCase()}`
+            id: `api-${planet.id || (planet.name ? planet.name.replace(/\s+/g, '-').toLowerCase() : 'unknown')}`
           }));
           setExoplanets(prev => [...prev, ...apiPlanets]);
         }
@@ -758,22 +861,56 @@ function App() {
     setLoading(true);
     try {
       let response;
+      let usedBackend = null;
 
-      // Use detected backend URL or fallback to mock service
-      if (currentBackendUrl && mlAvailable) {
+      // Check backend status before prediction
+      const availableBackend = await checkBackendStatus();
+      
+      if (availableBackend) {
         try {
-          response = await axios.post(`${currentBackendUrl}/predict`, params, { timeout: 5000 });
-          console.log(`✅ Using backend: ${currentBackendUrl}`);
+          console.log(`🚀 Making prediction request to: ${availableBackend}`);
+          response = await axios.post(`${availableBackend}/predict`, params, { timeout: 10000 });
+          usedBackend = availableBackend;
+          console.log(`✅ Prediction successful from backend: ${availableBackend}`);
+          console.log('📊 API Response:', response.data);
+          
+          // Debug: Check response data structure
+          console.log('🔍 Response structure check:');
+          console.log('  - prediction:', response.data.prediction);
+          console.log('  - confidence:', response.data.confidence);
+          console.log('  - habitability_score:', response.data.habitability_score);
+          console.log('  - planet_type:', response.data.planet_type);
+          console.log('  - planet_name:', response.data.planet_name);
+          
+          // Update backend status with successful call
+          setBackendStatus(prev => ({
+            ...prev,
+            lastCheck: new Date().toLocaleTimeString(),
+            error: null
+          }));
+          
         } catch (apiError) {
-          console.log(`⚠️ Backend failed, using mock ML service: ${apiError.message}`);
+          console.log(`⚠️ Backend prediction failed, using mock ML service: ${apiError.message}`);
+          
+          // Update backend status with error
+          setBackendStatus(prev => ({
+            ...prev,
+            error: `Prediction failed: ${apiError.message.substring(0, 50)}...`,
+            lastCheck: new Date().toLocaleTimeString()
+          }));
+          
           response = await MockMLService.predict(params);
         }
       } else {
-        console.log('ℹ️ Using mock ML service (no backend detected)');
+        console.log('ℹ️ No backend available, using mock ML service');
         response = await MockMLService.predict(params);
       }
 
-      setPrediction(response);
+      // Use response.data if it's an axios response, otherwise use response directly
+      const predictionData = response.data || response;
+      setPrediction(predictionData);
+      
+      console.log('🎯 Setting prediction data:', predictionData);
       
       // Use a fixed predicted planet that gets updated
       const fixedPlanetId = 'predicted-main';
@@ -788,13 +925,13 @@ function App() {
         // Update existing predicted planet
         const updatedPlanet = {
           ...exoplanets[existingPredictedIndex],
-          name: response.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
-          radius: params.koi_prad,
-          temperature: params.koi_teq,
-          disposition: response.prediction,
-          habitability: response.habitability_score,
-          color: response.prediction === 'CONFIRMED' ? '#4CAF50' :
-                 response.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
+          name: predictionData.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
+          radius: params.koi_prad || 1.0,
+          temperature: params.koi_teq || 288,
+          disposition: predictionData.prediction || 'UNKNOWN',
+          habitability: predictionData.habitability_score || 0,
+          color: predictionData.prediction === 'CONFIRMED' ? '#4CAF50' :
+                 predictionData.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
         };
 
         setExoplanets(prev => prev.map((planet, index) =>
@@ -802,26 +939,26 @@ function App() {
         ));
         targetPlanet = updatedPlanet;
         setAnimatingPlanetId(planetId);
-        setHasPredictedPlanet(true);
+        // setHasPredictedPlanet(true); // Removed unused state setter
       } else {
         // Create the main predicted planet (only once)
         const newPlanet = {
           id: planetId,
-          name: response.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
+          name: predictionData.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
           position: [15, 5, -10], // Fixed position for the predicted planet
-          radius: params.koi_prad,
-          temperature: params.koi_teq,
-          disposition: response.prediction,
-          habitability: response.habitability_score,
-          color: response.prediction === 'CONFIRMED' ? '#4CAF50' :
-                 response.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
+          radius: params.koi_prad || 1.0,
+          temperature: params.koi_teq || 288,
+          disposition: predictionData.prediction || 'UNKNOWN',
+          habitability: predictionData.habitability_score || 0,
+          color: predictionData.prediction === 'CONFIRMED' ? '#4CAF50' :
+                 predictionData.prediction === 'CANDIDATE' ? '#FF9800' : '#F44336'
         };
 
         setExoplanets(prev => [...prev, newPlanet]);
         targetPlanet = newPlanet;
         setAnimatingPlanetId(planetId);
         setPredictedPlanetIds(prev => [...prev, planetId]);
-        setHasPredictedPlanet(true);
+        // setHasPredictedPlanet(true); // Removed unused state setter
       }
 
       // Jump camera to predicted planet
@@ -960,6 +1097,8 @@ function App() {
         prediction={prediction}
         loading={loading}
         predictedPlanetIds={predictedPlanetIds}
+        expanded={aiPanelExpanded}
+        setExpanded={setAiPanelExpanded}
       />
       
       {/* Stats remain the same but enhanced */}
@@ -1009,8 +1148,8 @@ function App() {
               <span className="detail-icon">🎯</span>
               <div className="detail-content">
                 <span className="detail-label">Status:</span>
-                <span className={`detail-value status-${selectedPlanet.disposition?.toLowerCase()}`}>
-                  {selectedPlanet.disposition}
+                <span className={`detail-value status-${selectedPlanet.disposition ? selectedPlanet.disposition.toLowerCase() : 'unknown'}`}>
+                  {selectedPlanet.disposition || 'Unknown'}
                 </span>
               </div>
             </div>
@@ -1060,13 +1199,86 @@ function App() {
             <div className="ai-prediction-info">
               <h4>🤖 AI Prediction Results</h4>
               <div className="prediction-confidence">
-                Confidence: {prediction ? (prediction.confidence * 100).toFixed(1) : 'N/A'}%
+                Confidence: {prediction && prediction.confidence ? (prediction.confidence * 100).toFixed(1) : 'N/A'}%
               </div>
             </div>
           )}
         </div>
       )}
       
+      {/* Collapsible Backend Status Indicator - Left Bottom Corner */}
+      <div className={`backend-status-indicator ${statusExpanded ? 'expanded' : 'collapsed'}`}>
+        {/* Always visible compact header */}
+        <div className="status-compact-header" onClick={() => setStatusExpanded(!statusExpanded)}>
+          <span className="status-icon">
+            {backendStatus.connected ? '🟢' : '🔴'}
+          </span>
+          <span className="status-compact-title">
+            {backendStatus.connected ? 'API Connected' : 'API Disconnected'}
+          </span>
+          <span className="expand-icon">
+            {statusExpanded ? '▼' : '▲'}
+          </span>
+        </div>
+        
+        {/* Expandable details */}
+        <div className={`status-details ${statusExpanded ? 'visible' : 'hidden'}`}>
+          <div className="status-header">
+            <span className="status-title">Backend Status</span>
+            <button 
+              className="refresh-btn"
+              onClick={checkBackendStatus}
+              title="Refresh backend status"
+            >
+              🔄
+            </button>
+          </div>
+          
+          <div className="status-rows">
+            <div className="status-row">
+              <span className="label">Connection:</span>
+              <span className={`value ${backendStatus.connected ? 'connected' : 'disconnected'}`}>
+                {backendStatus.connected ? 'Connected' : 'Disconnected'}
+              </span>
+            </div>
+            
+            {backendStatus.connected && (
+              <>
+                <div className="status-row">
+                  <span className="label">URL:</span>
+                  <span className="value url" title={backendStatus.url}>
+                    {backendStatus.url.includes('localhost') ? 'Local' : 'Render'}
+                  </span>
+                </div>
+                
+                <div className="status-row">
+                  <span className="label">ML Models:</span>
+                  <span className={`value ${backendStatus.modelsLoaded ? 'loaded' : 'not-loaded'}`}>
+                    {backendStatus.modelsLoaded ? 'Loaded ✅' : 'Not Loaded ❌'}
+                  </span>
+                </div>
+              </>
+            )}
+            
+            <div className="status-row">
+              <span className="label">Last Check:</span>
+              <span className="value time">
+                {backendStatus.lastCheck || 'Never'}
+              </span>
+            </div>
+            
+            {backendStatus.error && (
+              <div className="status-row error">
+                <span className="label">Error:</span>
+                <span className="value error-msg" title={backendStatus.error}>
+                  {backendStatus.error}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Epic Loading Screen */}
       {loading && (
         <div className="loading-screen epic">
