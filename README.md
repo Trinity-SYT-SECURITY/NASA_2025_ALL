@@ -32,7 +32,7 @@ https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
 | **User Interaction** | Manual parameter input, real-time predictions, 3D exploration | [Parameter Guide](PLANET_PARAMETER_GUIDE.md) |
 | **Data Variable Impact** | 19 astronomical features with importance analysis | [Feature Importance](#⭐-feature-importance-analysis) |
 | **Classification System** | CONFIRMED, CANDIDATE, FALSE POSITIVE with confidence scores | [Confusion Matrix](#🎯-model-performance---confusion-matrix) |
-| **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API Documentation](https://nasa-2025-syn7.onrender.com/docs) |
+| **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API](https://nasa-2025-syn7.onrender.com/docs) |
 | **Novice-Friendly** | Preset configurations, guided parameter combinations, visual feedback | [Local Development Guide](LOCAL_DEVELOPMENT_GUIDE.md) |
 
 #### 🔬 **Features Beyond Requirements**
@@ -149,7 +149,7 @@ graph TB
 - **Database**: None required - stateless prediction service
 
 ### Production Deployment
-- **Frontend**: Vercel (https://nasa-2025-frontend.vercel.app)
+- **Frontend**: Vercel (https://nasa-2025-all.vercel.app/)
 - **Backend**: Render.com (https://nasa-2025-syn7.onrender.com) for ML models and API endpoints
 - **ML Models**: Embedded in backend deployment or external storage
 
@@ -160,7 +160,7 @@ graph TB
 
 ## 🔧 Vercel Configuration
 
-### Frontend (nasa-2025-frontend.vercel.app)
+### Frontend (https://nasa-2025-all.vercel.app/)
 ```json
 {
   "buildCommand": "npm run build",
@@ -169,7 +169,7 @@ graph TB
 }
 ```
 
-### Backend (nasa-2025.vercel.app)
+### Backend (https://nasa-2025-all.vercel.app/)
 ```json
 {
   "version": 2,
@@ -515,8 +515,8 @@ npm start
 - **API Documentation**: http://localhost:8000/docs
 
 #### 7. Deployment URLs
-- **Frontend**: https://nasa-2025-frontend.vercel.app
-- **Backend**: https://nasa-2025.vercel.app
+- **Frontend**: https://nasa-2025-all.vercel.app/
+- **Backend**: https://nasa-2025-syn7.onrender.com/
 - **ngrok Backend**: https://5b2a2202c984.ngrok-free.app
 
 ## 🎯 Usage Guide
