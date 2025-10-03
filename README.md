@@ -10,7 +10,9 @@ https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
 
 https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBne-rZ6-WEaTDxfCoEPvnJg?e=zm8cfJ
 
-**An Epic AI-Powered 3D Exoplanet Discovery Platform**
+----
+
+# **An Epic AI-Powered 3D Exoplanet Discovery Platform**
 
 [![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-0.160.0-black.svg)](https://threejs.org/)
