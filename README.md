@@ -1,9 +1,9 @@
 # 🌌 Exoplanet AI Discovery Platform
 
-
+## DEMO
 https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
 
-
+## Project Introduction - Video
 [![Nasa_2025](https://img.youtube.com/vi/kNAREvMdmzM/0.jpg)](https://www.youtube.com/watch?v=kNAREvMdmzM)
 
 
