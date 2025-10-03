@@ -4,7 +4,7 @@
 https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
 
 ## Project Introduction - Video (ENG 30s)
-[![Nasa_2025](https://img.youtube.com/vi/kNAREvMdmzM/0.jpg)](https://www.youtube.com/watch?v=kNAREvMdmzM)
+[![Nasa_2025](https://img.youtube.com/vi/kNAREvMdmzM/3.jpg)](https://www.youtube.com/watch?v=kNAREvMdmzM)
 
 ## PPT
 
