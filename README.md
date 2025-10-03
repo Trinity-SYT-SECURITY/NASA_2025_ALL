@@ -1,6 +1,10 @@
 # 🌌 Exoplanet AI Discovery Platform
 
 
+https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
+
+
+
 **An Epic AI-Powered 3D Exoplanet Discovery Platform**
 
 [![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
