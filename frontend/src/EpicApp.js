@@ -937,10 +937,17 @@ function App() {
       let planetId = fixedPlanetId;
 
       if (existingPredictedIndex !== -1) {
-        // Update existing predicted planet
+        // Update existing predicted planet with new random position
+        const randomPosition = [
+          (Math.random() - 0.5) * 40, // X: -20 to 20
+          (Math.random() - 0.5) * 20, // Y: -10 to 10  
+          (Math.random() - 0.5) * 40  // Z: -20 to 20
+        ];
+        
         const updatedPlanet = {
           ...exoplanets[existingPredictedIndex],
           name: predictionData.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
+          position: randomPosition, // Update position for each prediction
           radius: params.koi_prad || 1.0,
           temperature: params.koi_teq || 288,
           disposition: predictionData.prediction || 'UNKNOWN',
@@ -956,11 +963,17 @@ function App() {
         setAnimatingPlanetId(planetId);
         // setHasPredictedPlanet(true); // Removed unused state setter
       } else {
-        // Create the main predicted planet (only once)
+        // Create the main predicted planet with random position
+        const randomPosition = [
+          (Math.random() - 0.5) * 40, // X: -20 to 20
+          (Math.random() - 0.5) * 20, // Y: -10 to 10  
+          (Math.random() - 0.5) * 40  // Z: -20 to 20
+        ];
+        
         const newPlanet = {
           id: planetId,
           name: predictionData.planet_name || `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
-          position: [15, 5, -10], // Fixed position for the predicted planet
+          position: randomPosition, // Random position for each prediction
           radius: params.koi_prad || 1.0,
           temperature: params.koi_teq || 288,
           disposition: predictionData.prediction || 'UNKNOWN',
@@ -1031,10 +1044,17 @@ function App() {
       );
 
       if (existingDemoIndex !== -1) {
-        // Update existing demo planet
+        // Update existing demo planet with new random position
+        const randomDemoPosition = [
+          (Math.random() - 0.5) * 40, // X: -20 to 20
+          (Math.random() - 0.5) * 20, // Y: -10 to 10  
+          (Math.random() - 0.5) * 40  // Z: -20 to 20
+        ];
+        
         const updatedPlanet = {
           ...exoplanets[existingDemoIndex],
           name: `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
+          position: randomDemoPosition, // Update position for each prediction
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: "CANDIDATE",
@@ -1047,11 +1067,17 @@ function App() {
         ));
         setAnimatingPlanetId(updatedPlanet.id);
       } else {
-        // Create demo planet (only once)
+        // Create demo planet with random position
+        const randomDemoPosition = [
+          (Math.random() - 0.5) * 40, // X: -20 to 20
+          (Math.random() - 0.5) * 20, // Y: -10 to 10  
+          (Math.random() - 0.5) * 40  // Z: -20 to 20
+        ];
+        
         const newPlanet = {
           id: demoPlanetId,
           name: `Kepler-${Math.floor(Math.random() * 999) + 1} ${String.fromCharCode(97 + Math.floor(Math.random() * 26))}`,
-          position: [10, 3, -15], // Fixed position for demo planet
+          position: randomDemoPosition, // Random position for demo planet
           radius: params.koi_prad,
           temperature: params.koi_teq,
           disposition: "CANDIDATE",

@@ -238,8 +238,7 @@
   width: 420px;
   max-height: calc(100vh - 60px);
   padding: 25px 25px 25px 35px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* Compact header - always visible */

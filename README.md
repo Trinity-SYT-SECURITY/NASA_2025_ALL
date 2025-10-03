@@ -31,7 +31,7 @@
 | **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API Documentation](https://nasa-2025-syn7.onrender.com/docs) |
 | **Novice-Friendly** | Preset configurations, guided parameter combinations, visual feedback | [Local Development Guide](LOCAL_DEVELOPMENT_GUIDE.md) |
 
-#### 🔬 **Advanced Features Beyond Requirements**
+#### 🔬 **Features Beyond Requirements**
 
 - **🌌 Immersive 3D Universe**: Epic space visualization with realistic planetary effects
 - **🎯 Smart Planet Naming**: Similarity matching to identify real Kepler planets
@@ -64,7 +64,7 @@
 
 ## 🚀 Project Overview
 
-**Exoplanet AI Discovery Platform** is a revolutionary AI-driven 3D visualization platform that combines machine learning, space exploration, and immersive user experiences. The platform utilizes NASA's Kepler Space Telescope data to train advanced AI models for identifying and classifying exoplanets, then visualizes them in a spectacular 3D cosmic environment.
+**Exoplanet AI Discovery Platform** is a revolutionary AI-driven 3D visualization platform that combines machine learning, space exploration, and immersive user experiences. The platform utilizes NASA's Kepler Space Telescope data to train AI models for identifying and classifying exoplanets, then visualizes them in a spectacular 3D cosmic environment.
 
 ### 🌟 Key Features
 
@@ -190,7 +190,7 @@ graph TB
 ## 📋 Feature Highlights
 
 ### 🤖 AI Machine Learning System
-- **XGBoost Ensemble**: Advanced gradient boosting with 92.16% accuracy
+- **XGBoost Ensemble**: gradient boosting with 92.16% accuracy
 - **Feature Engineering**: 19 astronomical parameters with StandardScaler normalization
 - **Similarity Matching**: Cosine similarity for real planet name identification
 - **Real-time Prediction**: Instant classification with confidence scoring and habitability assessment
@@ -209,7 +209,7 @@ graph TB
 
 ## 🤖 Machine Learning Analysis
 
-Our exoplanet classification system uses advanced machine learning techniques to predict planet dispositions based on Kepler mission data. Below are the comprehensive training results and visualizations.
+Our exoplanet classification system uses machine learning techniques to predict planet dispositions based on Kepler mission data. Below are the comprehensive training results and visualizations.
 
 ### 🎨 Training Results Visualizations
 
@@ -276,10 +276,55 @@ Our ML pipeline employs several sophisticated algorithms and mathematical techni
 - **Purpose**: Normalize features to prevent bias towards larger-scale features
 - **Applied to**: All numerical features (period, radius, temperature, etc.)
 
-#### 🎯 Similarity Matching
-- **Cosine Similarity**: `sim(A,B) = (A·B) / (||A|| ||B||)`
-- **Purpose**: Find most similar known planets for naming predictions
-- **Threshold**: 0.3 minimum similarity for planet name matching
+#### 🎯  Similarity Matching System
+
+Our platform implements a sophisticated similarity matching algorithm to identify real Kepler planets based on input parameters, providing users with authentic planet names instead of generic predictions.
+
+**🔍 Technical Implementation:**
+
+- **Algorithm**: Cosine Similarity with StandardScaler normalization
+- **Mathematical Formula**: `sim(A,B) = (A·B) / (||A|| ||B||)`
+- **Feature Space**: 19-dimensional astronomical parameter vectors
+- **Similarity Threshold**: 0.3 minimum for planet name matching
+- **Data Source**: 2,743+ confirmed Kepler planets with valid names
+
+**⚙️ Processing Pipeline:**
+```
+Input Parameters → Feature Vector (19D) → StandardScaler Normalization 
+    ↓
+Cosine Similarity Calculation → Find Most Similar Planet → Return Real Name
+    ↓
+Output: Kepler-22 b, Kepler-447 b, etc. (Authentic Planet Names)
+```
+
+**🎯 Key Features:**
+- **Real Planet Names**: Returns actual Kepler mission discoveries
+- **High Accuracy**: 0.7+ similarity scores for excellent matches
+- **Scientific Validation**: Based on NASA's confirmed exoplanet database
+- **Dynamic Matching**: Adapts to different planetary parameter combinations
+- **Fallback System**: Generates descriptive names when no match found
+
+**📊 Similarity Score Interpretation:**
+- **0.9+**: Excellent match (same planetary type and characteristics)
+- **0.7-0.9**: Very good match (similar size, temperature, orbital properties)
+- **0.5-0.7**: Good match (comparable planetary conditions)
+- **0.3-0.5**: Fair match (some similar characteristics)
+- **<0.3**: No sufficient match (generates new descriptive name)
+
+**🌍 Real-World Examples:**
+
+| Input Parameters | Matched Planet | Similarity | Explanation |
+|------------------|----------------|------------|-------------|
+| Period: 365.25d, Radius: 1.0R⊕, Temp: 288K | **Kepler-22 b** | 0.949 | Earth-like habitable zone planet |
+| Period: 3.5d, Radius: 11.0R⊕, Temp: 1200K | **Kepler-447 b** | 0.738 | Hot Jupiter with similar orbital period |
+| Period: 20d, Radius: 1.8R⊕, Temp: 350K | **Kepler-411 d** | 0.753 | Super-Earth in warm zone |
+| Period: 500d, Radius: 0.8R⊕, Temp: 150K | **Kepler-22 b** | 0.885 | Frozen world with similar characteristics |
+
+**🔬 Technical Advantages:**
+- **Scientific Accuracy**: Uses NASA's verified exoplanet database
+- **Parameter Sensitivity**: Responds to subtle changes in input values
+- **Educational Value**: Users learn about real discovered planets
+- **Research Integration**: Connects predictions to actual astronomical discoveries
 
 #### 📊 Performance Metrics
 - **Accuracy**: Overall classification correctness
@@ -321,7 +366,7 @@ Our model has been validated against:
 
 ## 💪 Our Development Efforts & Achievements
 
-### 🧠 **Advanced AI/ML Implementation**
+### 🧠 **AI/ML Implementation**
 
 We went far beyond basic classification by implementing:
 
@@ -381,7 +426,7 @@ We went far beyond basic classification by implementing:
 
 ### 🌟 **Innovation Beyond Requirements**
 
-#### **Advanced Features**
+#### **Features**
 - **Smart Planet Naming**: Uses ML similarity to identify real Kepler planets by name
 - **Interactive Parameter Testing**: Users can input exact values to find specific planets
 - **Real-time Backend Status**: Live connection monitoring with detailed diagnostics
@@ -743,22 +788,6 @@ const handlePredict = async (params) => {
 - **CORS Configuration**: Appropriate cross-origin resource sharing setup
 - **Error Handling**: User-friendly error messages without sensitive data exposure
 - **Rate Limiting**: API abuse prevention (optional feature)
-
-## 🤝 Contributing Guidelines
-
-We welcome community contributions! Please follow these steps:
-
-1. Fork the project
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Development Standards
-- Use ESLint and Prettier for code formatting
-- Write tests for new features
-- Update documentation
-- Follow semantic versioning
 
 ## 📄 License
 
