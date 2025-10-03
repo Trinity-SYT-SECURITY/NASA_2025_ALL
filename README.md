@@ -593,22 +593,20 @@ exoplanet-ai-discovery-platform/
 │   │   ├── 🧮 data_preprocessing.py           # Data cleaning and preparation utilities
 │   │   └── 🎯 exoplanet_classifier.py        # Model training and evaluation framework
 │   │
-│   └── 📂 data/                       # Astronomical datasets
+│   └── 📂 data/                       # ALL NASA datasets
 │       └── 🌌 cumulative_2025.09.16_22.42.55.csv # NASA Kepler Objects of Interest dataset
 │
 ├── 🌐 Frontend Application
 │   ├── 📦 frontend/
-│   │   ├── ⚛️ src/
-│   │   │   ├── 🧩 components/          # React component library
-│   │   │   │   ├── 🌌 3D/              # Three.js 3D visualization components
-│   │   │   │   └── 🎛️ UI/              # User interface components
-│   │   │   ├── 🏪 store/              # Zustand state management
-│   │   │   ├── 🔗 services/           # API communication utilities
-│   │   │   └── 🎨 EpicApp.js          # Main 3D universe application
-│   │   ├── 📁 public/                 # Static assets and resources
-│   │   └── 📋 package.json           # Node.js dependencies and scripts
-│   │
-│   └── 🎭 planetarium/                # Reference implementation (educational)│
+│   ├── ⚛️ src/
+│   │   ├── 🧩 components/          # React component library
+│   │   │   ├── 🌌 3D/              # Three.js 3D visualization components
+│   │   │   └── 🎛️ UI/              # User interface components
+│   │   ├── 🏪 store/              # Zustand state management
+│   │   ├── 🔗 services/           # API communication utilities
+│   │   └── 🎨 EpicApp.js          # Main 3D universe application
+│   ├── 📁 public/                 # Static assets and resources
+│   └── 📋 package.json           # Node.js dependencies and scripts
 │
 └── 🚀 Deployment & Configuration
     ├── 🐳 Dockerfile                  # Full-stack Docker container
