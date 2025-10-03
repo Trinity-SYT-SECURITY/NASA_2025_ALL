@@ -14,7 +14,8 @@ const detectBackendType = async () => {
   // Priority: Render > ngrok > Local FastAPI > Vercel > Mock
   const backends = [
     { name: 'local_fastapi', url: 'http://localhost:8000', testUrl: '/health' },
-    { name: 'render', url: 'https://test-backend-2-ikqg.onrender.com', testUrl: '/health' },
+    { name: 'render', url: 'https://nasa-2025-syn7.onrender.com', testUrl: '/health' },
+    { name: 'ngrok', url: 'https://5b2a2202c984.ngrok-free.app', testUrl: '/health'}
   ];
 
   // Try to get from environment variables first
@@ -733,7 +734,7 @@ function App() {
     
     // Determine backend URLs based on environment
     const backendUrls = [
-      'https://test-backend-2-ikqg.onrender.com', // Render backend (production)
+      'https://nasa-2025-syn7.onrender.com', // Render backend (production)
       'http://localhost:8000' // Local backend (development)
     ];
     

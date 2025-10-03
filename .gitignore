@@ -11,6 +11,7 @@
 # production
 /build
 /tests
+/ml_analy_charts
 # misc
 .DS_Store
 .env

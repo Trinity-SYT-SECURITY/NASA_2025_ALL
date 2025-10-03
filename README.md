@@ -28,7 +28,7 @@
 | **User Interaction** | Manual parameter input, real-time predictions, 3D exploration | [Parameter Guide](PLANET_PARAMETER_GUIDE.md) |
 | **Data Variable Impact** | 19 astronomical features with importance analysis | [Feature Importance](#⭐-feature-importance-analysis) |
 | **Classification System** | CONFIRMED, CANDIDATE, FALSE POSITIVE with confidence scores | [Confusion Matrix](#🎯-model-performance---confusion-matrix) |
-| **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API Documentation](https://test-backend-2-ikqg.onrender.com/docs) |
+| **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API Documentation](https://nasa-2025-syn7.onrender.com/docs) |
 | **Novice-Friendly** | Preset configurations, guided parameter combinations, visual feedback | [Local Development Guide](LOCAL_DEVELOPMENT_GUIDE.md) |
 
 #### 🔬 **Advanced Features Beyond Requirements**
@@ -146,7 +146,7 @@ graph TB
 
 ### Production Deployment
 - **Frontend**: Vercel (https://nasa-2025-frontend.vercel.app)
-- **Backend**: Render.com (https://test-backend-2-ikqg.onrender.com) for ML models and API endpoints
+- **Backend**: Render.com (https://nasa-2025-syn7.onrender.com) for ML models and API endpoints
 - **ML Models**: Embedded in backend deployment or external storage
 
 ### Alternative Backend Hosting
@@ -468,7 +468,7 @@ npm start
 #### 7. Deployment URLs
 - **Frontend**: https://nasa-2025-frontend.vercel.app
 - **Backend**: https://nasa-2025.vercel.app
-- **ngrok Backend**: https://483d13a1412e.ngrok-free.app
+- **ngrok Backend**: https://5b2a2202c984.ngrok-free.app
 
 ## 🎯 Usage Guide
 

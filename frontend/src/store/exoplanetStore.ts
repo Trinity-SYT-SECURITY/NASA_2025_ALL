@@ -6,7 +6,7 @@ const getApiBaseUrl = () => {
   // Check if we're in production (Vercel)
   if (window.location.hostname !== 'localhost') {
     console.log('🔧 Store: Using Render backend for production');
-    return 'https://test-backend-2-ikqg.onrender.com';
+    return 'https://nasa-2025-syn7.onrender.com';
   } else {
     console.log('🔧 Store: Using local backend for development');
     return 'http://localhost:8000';
