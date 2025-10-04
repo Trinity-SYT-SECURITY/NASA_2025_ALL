@@ -156,6 +156,7 @@ graph TB
 ### Production Deployment
 - **Frontend**: Vercel (https://nasa-2025-all.vercel.app/)
 - **Backend**: Render.com (https://nasa-2025-syn7.onrender.com) for ML models and API endpoints
+    - If the front-end clicks on the planet prediction and there is no response, it is because the back-end is down. Please wake up the service here first.
 - **ML Models**: Embedded in backend deployment or external storage
 
 ### Alternative Backend Hosting
