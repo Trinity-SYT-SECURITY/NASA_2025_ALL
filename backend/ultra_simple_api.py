@@ -156,11 +156,10 @@ app.add_middleware(
 try:
     import os
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # 尝试多个可能的路径（现在 ultra_simple_api.py 在根目录）
     possible_ml_dirs = [
-        os.path.join(current_dir, 'ml'),        # Docker: /app/ml/
-        os.path.join('/app', 'ml'),             # 绝对 Docker 路径
-        os.path.join(current_dir, '..', 'ml'),  # 备用路径
+        os.path.join(current_dir, 'ml'),       
+        os.path.join('/app', 'ml'),             
+        os.path.join(current_dir, '..', 'ml'),  
     ]
 
     ml_dir = None
