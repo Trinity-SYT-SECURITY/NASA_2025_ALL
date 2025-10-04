@@ -1,4 +1,4 @@
-# 🎯 Advanced Similarity Matching Technology
+# 🎯 Similarity Matching Technology
 
 ## 🌟 Overview
 
@@ -183,7 +183,7 @@ else:
 
 ### Planned Improvements
 - **Multi-dataset Support**: Include TESS and other mission data
-- **Advanced Algorithms**: Implement more sophisticated similarity metrics
+- **  Algorithms**: Implement more sophisticated similarity metrics
 - **Real-time Updates**: Sync with latest exoplanet discoveries
 - **Visual Similarity**: Include visual characteristics in matching
 
