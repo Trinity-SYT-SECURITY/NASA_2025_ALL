@@ -36,7 +36,7 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBne-rZ6-WEaTDxfCoEPv
 | **AI/ML Model Training** | XGBoost ensemble with 92.16% accuracy on 9,564 Kepler KOIs | ML Analysis |
 | **NASA Open-Source Data** | Kepler, K2, and TESS mission datasets integrated | `data/cumulative_2025.09.16_22.42.55.csv` |
 | **Web Interface** | Interactive 3D visualization with React Three Fiber | [Live Demo](https://nasa-2025-all.vercel.app) |
-| **Data Variable Impact** | 19 astronomical features with importance analysis | [Feature Importance](#⭐-feature-importance-analysis) |
+| **Data Variable Impact** | 19 astronomical features with importance analysis | Feature Importance|
 | **Classification System** | CONFIRMED, CANDIDATE, FALSE POSITIVE with confidence scores | Confusion Matrix |
 | **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API](https://nasa-2025-syn7.onrender.com/) |
 
@@ -242,7 +242,7 @@ Our multi-algorithm ensemble achieved exceptional results, demonstrating the pow
 
 | Model | Accuracy | Key Strengths | Challenge Application |
 |-------|----------|---------------|----------------------|
-| **Random Forest** | **92%** | Robust ensemble, handles complex features | Best for production deployment |
+| **Random Forest** | **91.90%** | Robust ensemble, handles complex features | Best for production deployment |
 | **XGBoost** | **92%** | Gradient boosting, excellent with imbalanced data | Optimal for candidate detection |
 | **Logistic Regression** | **87%** | Highly interpretable, fast inference | Great for research transparency |
 | **SVM** | **85%** | Strong decision boundaries | Effective for edge case classification |
