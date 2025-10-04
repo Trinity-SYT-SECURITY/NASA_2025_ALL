@@ -6,4 +6,3 @@ https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbl
 
 https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=TOI
 
-https://www.kaggle.com/datasets/keplersmachines/kepler-labelled-time-series-data?resource=download&select=exoTrain.csv
