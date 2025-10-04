@@ -200,7 +200,7 @@ graph TB
 ## 📋 Feature Highlights
 
 ### 🤖 AI Machine Learning System
-- **XGBoost Ensemble**: gradient boosting with 92.16% accuracy
+- **XGBoost Ensemble**: gradient boosting with 92% accuracy
 - **Feature Engineering**: 19 astronomical parameters with StandardScaler normalization
 - **Similarity Matching**: Cosine similarity for real planet name identification
 - **Real-time Prediction**: Instant classification with confidence scoring and habitability assessment
@@ -238,14 +238,14 @@ To address NASA's exoplanet identification challenge, we developed a comprehensi
 Our multi-algorithm ensemble achieved exceptional results, demonstrating the power of automated AI/ML analysis:
 
 ![Model Performance Comparison](ml_training_results/03_model_performance.png)
-*Comprehensive comparison of ML algorithms showing Random Forest achieving 92.4% accuracy*
+*Comprehensive comparison of ML algorithms showing Random Forest achieving 92% accuracy*
 
 | Model | Accuracy | Key Strengths | Challenge Application |
 |-------|----------|---------------|----------------------|
-| **Random Forest** | **92.4%** | Robust ensemble, handles complex features | Best for production deployment |
-| **XGBoost** | **91.8%** | Gradient boosting, excellent with imbalanced data | Optimal for candidate detection |
-| **Logistic Regression** | **85.6%** | Highly interpretable, fast inference | Great for research transparency |
-| **SVM** | **83.2%** | Strong decision boundaries | Effective for edge case classification |
+| **Random Forest** | **92%** | Robust ensemble, handles complex features | Best for production deployment |
+| **XGBoost** | **92%** | Gradient boosting, excellent with imbalanced data | Optimal for candidate detection |
+| **Logistic Regression** | **87%** | Highly interpretable, fast inference | Great for research transparency |
+| **SVM** | **85%** | Strong decision boundaries | Effective for edge case classification |
 
 
 
