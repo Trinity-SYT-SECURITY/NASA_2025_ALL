@@ -237,7 +237,7 @@ To address NASA's exoplanet identification challenge, we developed a comprehensi
 
 Our multi-algorithm ensemble achieved exceptional results, demonstrating the power of automated AI/ML analysis:
 
-![Model Performance Comparison](ml_charts/03_model_performance.png)
+![Model Performance Comparison](ml_training_results/03_model_performance.png)
 *Comprehensive comparison of ML algorithms showing Random Forest achieving 92.4% accuracy*
 
 | Model | Accuracy | Key Strengths | Challenge Application |
@@ -258,7 +258,7 @@ Our exoplanet classification system uses machine learning techniques to predict 
 #### 📊 Dataset Overview
 
 #### Dataset Feature Distribution Analysis
-![Dataset Overview](ml_charts/01_dataset_overview.png)
+![Dataset Overview](ml_training_results/01_dataset_overview.png)
 *Distribution analysis of key exoplanet features: Orbital Period, Planet Radius, Equilibrium Temperature, and Stellar Temperature*
 
 **Key Insights**:
@@ -268,7 +268,7 @@ Our exoplanet classification system uses machine learning techniques to predict 
 - **Stellar Temperature**: Solar-type stars (4000-7000K) most common
 
 #### Classification Balance & Data Quality
-![Classification Distribution](ml_charts/02_classification_distribution.png)
+![Classification Distribution](ml_training_results/02_classification_distribution.png)
 *Balanced representation of confirmed exoplanets, candidates, and false positives*
 
 This addresses the challenge requirement for handling **"all confirmed exoplanets, planetary candidates, and false positives"** from NASA missions.
@@ -280,7 +280,7 @@ This addresses the challenge requirement for handling **"all confirmed exoplanet
 Scatter plot analysis of planets in the habitable zone, where liquid water could potentially exist on the surface.
 
 #### Confusion Matrix - Detailed Accuracy Analysis
-![Confusion Matrix](ml_charts/04_confusion_matrix.png)
+![Confusion Matrix](ml_training_results/04_confusion_matrix.png)
 *Detailed prediction accuracy breakdown for the best performing Random Forest model*
 
 **Classification Performance**:
@@ -290,13 +290,13 @@ Scatter plot analysis of planets in the habitable zone, where liquid water could
 
 #### Feature Importance & Variable Impact Analysis
 
-![Feature Importance](ml_charts/05_feature_importance.png)
+![Feature Importance](ml_training_results/05_feature_importance.png)
 *Quantitative analysis of which astronomical parameters most impact exoplanet classification decisions*
 
 **Critical Discovery**: Planet radius (35% importance) and equilibrium temperature (28% importance) are the most predictive features, directly answering the challenge question about **"how each data variable might impact the final decision to classify the data point."**
 
 #### Model Training Convergence
-![Learning Curves](ml_charts/06_learning_curves.png)
+![Learning Curves](ml_training_results/06_learning_curves.png)
 *Training and validation performance showing optimal convergence without overfitting*
 
 **Training Insights**:
@@ -307,12 +307,12 @@ Scatter plot analysis of planets in the habitable zone, where liquid water could
 
 #### ROC Curve Analysis - Multi-class Performance
 
-![ROC Curves](ml_charts/07_roc_curves.png)
+![ROC Curves](ml_training_results/07_roc_curves.png)
 *Receiver Operating Characteristic curves comparing model performance across all algorithms*
 
 ### 🚀 Real-time Prediction Performance
 
-![Training Progress](ml_charts/08_training_progress.png)
+![Training Progress](ml_training_results/08_training_progress.png)
 *Model training convergence showing loss reduction over training epochs*
 
 **Production Metrics**:
@@ -321,11 +321,6 @@ Scatter plot analysis of planets in the habitable zone, where liquid water could
 - **Throughput**: 20+ predictions/second (handles batch analysis)
 - **API Response**: JSON format compatible with web interfaces
 
-#### 🚀 Training Progress
-
-![🚀 Training Progress](ml_training_results/08_training_progress.png)
-
-Model training progress showing loss reduction and accuracy improvement over training iterations.
 
 #### Comprehensive Model Performance Comparison
 
@@ -550,23 +545,6 @@ We went far beyond basic classification by implementing:
 - **Real-time Backend Status**: Live connection monitoring with detailed diagnostics
 - **Educational Value**: Helps users understand exoplanet science through interaction
 
-### 🎯 Challenge-Specific Innovations
-
-#### 1. **Automated Transit Analysis**
-Replaces manual astrophysicist review with AI classification, directly addressing the challenge's core problem.
-
-#### 2. **Interactive Scientific Interface**
-Web-based platform allows researchers to:
-- Input new observational parameters
-- Get instant AI classification results
-- Visualize predictions in 3D space
-- Access detailed confidence metrics
-
-#### 3. **Variable Impact Transparency**
-Comprehensive feature importance analysis shows exactly how each parameter influences classification decisions.
-
-#### 4. **Scalable Architecture**
-Designed to handle the vast datasets from Kepler, K2, and TESS missions mentioned in the challenge.
 
 ### 🏆 **Competition Advantages**
 
