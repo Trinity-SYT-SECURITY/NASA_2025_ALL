@@ -33,13 +33,12 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBne-rZ6-WEaTDxfCoEPv
 
 | **Challenge Requirement** | **Our Implementation** | **Evidence** |
 |---------------------------|------------------------|--------------|
-| **AI/ML Model Training** | XGBoost ensemble with 92.16% accuracy on 9,564 Kepler KOIs | [ML Analysis](#-machine-learning-analysis) |
+| **AI/ML Model Training** | XGBoost ensemble with 92.16% accuracy on 9,564 Kepler KOIs | ML Analysis |
 | **NASA Open-Source Data** | Kepler, K2, and TESS mission datasets integrated | `data/cumulative_2025.09.16_22.42.55.csv` |
 | **Web Interface** | Interactive 3D visualization with React Three Fiber | [Live Demo](https://nasa-2025-all.vercel.app) |
 | **Data Variable Impact** | 19 astronomical features with importance analysis | [Feature Importance](#⭐-feature-importance-analysis) |
-| **Classification System** | CONFIRMED, CANDIDATE, FALSE POSITIVE with confidence scores | [Confusion Matrix](#🎯-model-performance---confusion-matrix) |
-| **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API](https://nasa-2025-syn7.onrender.com/docs) |
-| **Novice-Friendly** | Preset configurations, guided parameter combinations, visual feedback | [Local Development Guide](LOCAL_DEVELOPMENT_GUIDE.md) |
+| **Classification System** | CONFIRMED, CANDIDATE, FALSE POSITIVE with confidence scores | Confusion Matrix |
+| **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API](https://nasa-2025-syn7.onrender.com/) |
 
 #### 🔬 **Other Features**
 
