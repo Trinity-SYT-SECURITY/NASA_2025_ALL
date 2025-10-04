@@ -738,6 +738,14 @@ const handlePredict = async (params) => {
 - **Error Handling**: User-friendly error messages without sensitive data exposure
 - **Rate Limiting**: API abuse prevention (optional feature)
 
+## Developers(Team Members...)
+
+- YI-TING SHEN
+- ChatGPT
+- GROK
+- Gemini
+
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
