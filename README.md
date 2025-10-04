@@ -42,7 +42,7 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBne-rZ6-WEaTDxfCoEPv
 | **Researcher Tools** | API endpoints, statistical dashboards, habitability assessment | [API](https://nasa-2025-syn7.onrender.com/docs) |
 | **Novice-Friendly** | Preset configurations, guided parameter combinations, visual feedback | [Local Development Guide](LOCAL_DEVELOPMENT_GUIDE.md) |
 
-#### 🔬 **Features Beyond Requirements**
+#### 🔬 **Other Features**
 
 - **🌌 Immersive 3D Universe**: Epic space visualization with realistic planetary effects
 - **🎯 Smart Planet Naming**: Similarity matching to identify real Kepler planets
