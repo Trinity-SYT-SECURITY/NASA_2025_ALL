@@ -48,7 +48,6 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBlmEL-t2l8zx2y7041kc
 - **📊 Real-time Statistics**: Live model performance and dataset analytics  
 - **🤖 Collapsible UI**: Space-efficient interface design for researchers
 - **🔄 Hot Reload Development**: Seamless development experience
-- **🧮 Mathematical Foundations**: Detailed algorithm explanations with formulas
 
 ## 🚀 Project Overview
 
@@ -260,12 +259,7 @@ Scatter plot analysis of planets in the habitable zone, where liquid water could
 
 #### Confusion Matrix - Detailed Accuracy Analysis
 ![Confusion Matrix](ml_training_results/04_confusion_matrix.png)
-*Detailed prediction accuracy breakdown for the best performing Random Forest model*
-
-**Classification Performance**:
-- **CONFIRMED**: 85/100 correctly identified (85% precision)
-- **CANDIDATE**: 142/200 correctly identified (71% precision)
-- **FALSE POSITIVE**: 87/100 correctly identified (87% precision)
+*Detailed prediction accuracy breakdown for the best performing XGBoost model*
 
 #### Feature Importance & Variable Impact Analysis
 
@@ -839,7 +833,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 + [Kepler Objects of Interest (KOI)](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative): This dataset is a comprehensive list of all confirmed exoplanets, planetary candidates, and false positives determined on all the transits captured by Kepler. Utilizing the variables in this labeled dataset could make for a solid method of performing supervised learning from different variables in the dataset. See column “Disposition Using Kepler Data” for classification.
 
-+ #### 🎓 **Target Audiences Addressed**
+### 🎓 **Target Audiences Addressed**
 
 **For Researchers & Scientists:**
 - Professional API endpoints with OpenAPI documentation
