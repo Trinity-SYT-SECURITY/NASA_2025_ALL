@@ -16,7 +16,7 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBlmEL-t2l8zx2y7041kc
 
 ----
 
-# **An AI-Powered 3D Exoplanet Discovery Platform**
+# **ExoHunter: AI-Powered 3D Exoplanet Discovery Platform**
 
 [![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-0.160.0-black.svg)](https://threejs.org/)
