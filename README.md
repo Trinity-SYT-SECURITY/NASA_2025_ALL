@@ -11,6 +11,9 @@ https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
 
 https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBlmEL-t2l8zx2y7041kcY8g?e=PdaQxS
 
+
+**Note: Please do not copy or modify this project during the NASA APP Challenge 2025 competition. If you are found doing so, you will be disqualified from the competition**
+
 ----
 
 # **An AI-Powered 3D Exoplanet Discovery Platform**
