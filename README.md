@@ -230,13 +230,6 @@ No green points are visible in the chart, meaning that within this dataset, no c
 ![Confusion Matrix](ml_training_results/04_confusion_matrix.png)
 *Detailed prediction accuracy breakdown for the best performing XGBoost model*
 
-#### Feature Importance & Variable Impact Analysis
-
-![Feature Importance](ml_training_results/05_feature_importance.png)
-*Quantitative analysis of which astronomical parameters most impact exoplanet classification decisions*
-
-**Critical Discovery**: Planet radius (35% importance) and equilibrium temperature (28% importance) are the most predictive features, directly answering the challenge question about **"how each data variable might impact the final decision to classify the data point."**
-
 #### Model Training Convergence
 ![Learning Curves](ml_training_results/06_learning_curves.png)
 *Training and validation performance showing optimal convergence without overfitting*
