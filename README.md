@@ -1,4 +1,5 @@
 # 🌌 Exoplanet AI Discovery Platform
+**Please be sure to use a computer to open this page, the mobile version will have display problems**
 
 ## DEMO
 https://github.com/user-attachments/assets/47c00200-5c87-4939-aa4e-7236843178ff
