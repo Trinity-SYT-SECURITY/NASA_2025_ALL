@@ -622,7 +622,7 @@ npm start
 #### 7. Deployment URLs
 - **Frontend**: https://nasa-2025-all.vercel.app/
 - **Backend**: https://nasa-2025-syn7.onrender.com/
-- **ngrok Backend**: https://3a673acd7b7b.ngrok-free.app
+- **ngrok Backend**: https://XXX.ngrok-free.app
 
 ## 🎯 Usage Guide
 
