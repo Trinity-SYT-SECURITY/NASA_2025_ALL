@@ -66,66 +66,8 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBlmEL-t2l8zx2y7041kc
 
 ## 🏗️ Technical Architecture
 
-```mermaid
-graph TB
-    %% User Layer
-    U[User Interface<br/>Interactive 3D Experience] --> F
+<img width="3840" height="1367" alt="Untitled diagram _ Mermaid Chart-2025-10-05-134321" src="https://github.com/user-attachments/assets/011dcb5f-6931-41e9-97b3-0e0394e0b57f" />
 
-    %% Frontend Layer
-    subgraph "Frontend (React)"
-        F[React Application]
-        F --> R3F[React Three Fiber<br/>3D Rendering Engine]
-        F --> TJS[Three.js<br/>WebGL Graphics]
-        F --> REC[Recoil<br/>State Management]
-        F --> AXI[Axios<br/>HTTP Client]
-        F --> UI[Material-UI<br/>Component Library]
-    end
-
-    %% API Communication
-    F <--> API[REST API Layer]
-
-    %% Backend Layer
-    subgraph "Backend (FastAPI)"
-        API --> FAS[FastAPI Server<br/>REST Endpoints]
-        API --> PYM[Pydantic Models<br/>Data Validation]
-        API --> JOB[Joblib Models<br/>ML Model Loading]
-        API --> COR[CORS Middleware<br/>Cross-Origin Support]
-        API --> REN[Render Deployment<br/>Cloud Hosting]
-
-        %% ML Processing
-        FAS --> MLP[ML Processing Pipeline]
-        MLP --> XGB[XGBoost<br/>Classification Model]
-        MLP --> FE[Feature Engineering<br/>Data Transformation]
-        MLP --> PRE[Data Preprocessing<br/>Cleaning & Scaling]
-        MLP --> EVAL[Model Evaluation<br/>Performance Metrics]
-    end
-
-    %% Data Layer
-    PRE --> DATA[NASA KOI Dataset<br/>Astronomical Data Source]
-    FE --> DATA
-    XGB --> DATA
-
-    %% 3D Visualization Pipeline
-    R3F --> SCE[3D Scene Graph<br/>Planetary Objects]
-    SCE --> PHY[Physics Simulation<br/>Orbital Mechanics]
-    SCE --> REN[Rendering Pipeline<br/>Shaders & Materials]
-    SCE --> INT[Interactive Controls<br/>Camera & Input]
-
-    %% State Flow
-    UI --> REC
-    REC --> F
-    AXI --> API
-
-    %% Styling
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef backend fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef data fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef ml fill:#fff3e0,stroke:#e65100,stroke-width:2px
-
-    class F,UI,REC,AXI,R3F,TJS,SCE,PHY,REN,INT frontend
-    class FAS,PYM,JOB,COR,REN,API,MLP backend
-    class XGB,FE,PRE,EVAL,DATA ml
-```
 
 ## 🚀 Deployment Architecture
 
