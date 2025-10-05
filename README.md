@@ -239,7 +239,7 @@ To address NASA's exoplanet identification challenge, we developed a comprehensi
 Our multi-algorithm ensemble achieved exceptional results, demonstrating the power of automated AI/ML analysis:
 
 ![Model Performance Comparison](ml_training_results/03_model_performance.png)
-*Comprehensive comparison of ML algorithms showing Random Forest achieving 92% accuracy*
+*Comprehensive comparison of ML algorithms showing Random Forest achieving 91.90% accuracy*
 
 | Model | Accuracy | Key Strengths | Challenge Application |
 |-------|----------|---------------|----------------------|
@@ -248,7 +248,7 @@ Our multi-algorithm ensemble achieved exceptional results, demonstrating the pow
 | **Logistic Regression** | **87%** | Highly interpretable, fast inference | Great for research transparency |
 | **SVM** | **85%** | Strong decision boundaries | Effective for edge case classification |
 
-
+After multiple rounds of training and testing, taking into account the issues of overfitting and underfitting, and with the dataset containing only a little over 9,000 records, an accuracy of around 92% is currently the best training result.
 
 ## 🤖 Machine Learning Analysis
 
