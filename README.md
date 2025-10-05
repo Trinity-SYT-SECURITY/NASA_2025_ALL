@@ -13,7 +13,7 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBlmEL-t2l8zx2y7041kc
 
 ----
 
-# **An Epic AI-Powered 3D Exoplanet Discovery Platform**
+# **An AI-Powered 3D Exoplanet Discovery Platform**
 
 [![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-0.160.0-black.svg)](https://threejs.org/)
@@ -48,29 +48,7 @@ https://1drv.ms/p/c/5a4b2ad34fe5c210/EenmZO0Y1YtCjDR1CJe07KQBlmEL-t2l8zx2y7041kc
 - **📊 Real-time Statistics**: Live model performance and dataset analytics  
 - **🤖 Collapsible UI**: Space-efficient interface design for researchers
 - **🔄 Hot Reload Development**: Seamless development experience
-- **📈 Comprehensive Visualizations**: 8+ ML training result charts
 - **🧮 Mathematical Foundations**: Detailed algorithm explanations with formulas
-
-#### 🎓 **Target Audiences Addressed**
-
-**For Researchers & Scientists:**
-- Professional API endpoints with OpenAPI documentation
-- Detailed statistical analysis and model performance metrics
-- Batch processing capabilities for large datasets
-- Scientific validation against NASA Exoplanet Archive
-
-**For Novices & Students:**
-- Interactive 3D visualization to understand exoplanet concepts
-- Preset parameter configurations for easy exploration
-- Step-by-step parameter guides with expected results
-- Educational tooltips and explanations throughout the interface
-
-**For Developers:**
-- Clean, documented codebase with modern tech stack
-- Comprehensive test suite and development guides
-- Modular architecture for easy extension
-- Docker containerization for deployment
-
 
 ## 🚀 Project Overview
 
@@ -860,6 +838,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## DATA
 
 + [Kepler Objects of Interest (KOI)](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative): This dataset is a comprehensive list of all confirmed exoplanets, planetary candidates, and false positives determined on all the transits captured by Kepler. Utilizing the variables in this labeled dataset could make for a solid method of performing supervised learning from different variables in the dataset. See column “Disposition Using Kepler Data” for classification.
+
++ #### 🎓 **Target Audiences Addressed**
+
+**For Researchers & Scientists:**
+- Professional API endpoints with OpenAPI documentation
+- Detailed statistical analysis and model performance metrics
+- Batch processing capabilities for large datasets
+- Scientific validation against NASA Exoplanet Archive
+
+**For Novices & Students:**
+- Interactive 3D visualization to understand exoplanet concepts
+- Preset parameter configurations for easy exploration
+- Step-by-step parameter guides with expected results
+- Educational tooltips and explanations throughout the interface
+
+**For Developers:**
+- Clean, documented codebase with modern tech stack
+- Comprehensive test suite and development guides
+- Modular architecture for easy extension
+- Docker containerization for deployment
 
 ---
 
