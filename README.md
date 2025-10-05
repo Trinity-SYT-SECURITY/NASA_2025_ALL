@@ -628,7 +628,6 @@ exoplanet-ai-discovery-platform/
 │   │   ├── 🤖 exoplanet_model_best.joblib     # Best performing XGBoost model
 │   │   ├── 📏 scaler.joblib                   # StandardScaler for feature normalization
 │   │   ├── 🏷️ label_encoder.joblib            # LabelEncoder for target variable encoding
-│   │   ├── 📈 exoplanet_model_feature_importance.csv # Feature importance analysis
 │   │   ├── 🧮 data_preprocessing.py           # Data cleaning and preparation utilities
 │   │   └── 🎯 exoplanet_classifier.py        # Model training and evaluation framework
 │   │
