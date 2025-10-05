@@ -199,7 +199,32 @@ This addresses the challenge requirement for handling **"all confirmed exoplanet
 
 ![🌍 Habitable Zone Analysis](ml_training_results/03_habitable_zone_analysis.png)
 
-Scatter plot analysis of planets in the habitable zone, where liquid water could potentially exist on the surface.
+🎯 Axis Description
+
+X-axis (Stellar Insolation): Stellar radiation, normalized to Earth (Earth = 1.0)
+
+Y-axis (Equilibrium Temperature): Planetary equilibrium temperature (Kelvin)
+
+🌟 Habitable Zone Concept
+The habitable zone refers to the orbital distance from a star where:
+
+Liquid water can exist on a planet’s surface
+
+Temperatures are moderate—not too hot or too cold
+
+Conditions may allow life to exist
+
+📈 Data Point Analysis
+
+🔴 Red Dots (FALSE POSITIVE):
+Most of the points are red, indicating objects misclassified as planetary candidates. In reality, they are caused by stellar activity, instrumental noise, or other false signals.
+
+🟠 Orange Dots (CANDIDATE):
+A few orange points appear, mainly concentrated in the lower temperature and lower radiation region. These are actual planet candidates that require further observation for confirmation.
+
+🟢 Green Dots (CONFIRMED):
+No green points are visible in the chart, meaning that within this dataset, no confirmed habitable zone planets are present.
+
 
 #### Confusion Matrix - Detailed Accuracy Analysis
 ![Confusion Matrix](ml_training_results/04_confusion_matrix.png)
