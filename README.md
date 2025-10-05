@@ -203,7 +203,7 @@ This addresses the challenge requirement for handling **"all confirmed exoplanet
 
 X-axis (Stellar Insolation): Stellar radiation, normalized to Earth (Earth = 1.0)
 
-Y-axis (Equilibrium Temperature): Planetary equilibrium temperature (Kelvin)
+Y-axis (Equilibrium Temperature): Planetary equilibrium temperature
 
 🌟 Habitable Zone Concept
 The habitable zone refers to the orbital distance from a star where:
