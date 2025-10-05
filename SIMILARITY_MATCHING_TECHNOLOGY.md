@@ -183,7 +183,7 @@ else:
 
 ### Planned Improvements
 - **Multi-dataset Support**: Include TESS and other mission data
-- **  Algorithms**: Implement more sophisticated similarity metrics
+- **Algorithms**: Implement more sophisticated similarity metrics
 - **Real-time Updates**: Sync with latest exoplanet discoveries
 - **Visual Similarity**: Include visual characteristics in matching
 
@@ -193,6 +193,3 @@ else:
 - **Discovery Prediction**: Predict where new planets might be found
 - **Educational Tools**: Develop learning modules for students
 
----
-
-**This similarity matching system represents a significant advancement in making AI predictions more scientifically accurate and educationally valuable by connecting them to real astronomical discoveries.** 🌌✨
