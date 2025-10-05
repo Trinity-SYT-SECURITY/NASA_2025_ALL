@@ -161,7 +161,6 @@ To address NASA's exoplanet identification challenge, we developed a comprehensi
 Our multi-algorithm ensemble achieved exceptional results, demonstrating the power of automated AI/ML analysis:
 
 ![Model Performance Comparison](ml_training_results/03_model_performance.png)
-*Comprehensive comparison of ML algorithms showing Random Forest achieving 91.90% accuracy*
 
 | Model | Accuracy | Key Strengths | Challenge Application |
 |-------|----------|---------------|----------------------|
